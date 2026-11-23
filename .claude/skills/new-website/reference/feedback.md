@@ -33,6 +33,13 @@ back-and-forth steps; most were order-of-operations and missing-detail problems,
   (8 tests instead of 1). Template `vitest.config.ts` now excludes `.claude/**` (lint already ignored it).
 - Anonymous sign-in question answered (keep off) in the phone guide and troubleshooting.
 
+- **Scaffold left a half-built repo on bad input** (it copied files before reading the config). It now checks every input first, reports all problems together, and changes
+  nothing on failure; it also accepts the config exactly as Firebase shows it (JavaScript object) and requires all six values and a matching project id. (`scripts/scaffold.mjs`, tested.)
+
+- **The starter fell behind** (it still had the Nov 22 skill). An automatic sync (workflow + token) was built, then removed in favour of a manual hand-off that
+  needs no long-lived token: after any change to the skill folder merges, Claude opens a pull request that copies the folder into the starter
+  (`docs/starter-sync.md`, and a rule in the repo's `CLAUDE.md`).
+
 ### Open
 - Automate the nicer web address (add a Hosting site, set `site` in firebase.json, `target` in workflows) and offer custom domains.
 - Avoid copy-pasting the key on a phone entirely (needs research; a computer-side `gh secret set` is not phone-friendly).
