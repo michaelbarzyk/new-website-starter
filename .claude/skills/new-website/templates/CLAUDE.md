@@ -20,8 +20,10 @@ Every user-facing change goes through two loops before it ships.
   `dev` is merged into `main` ONLY when the user explicitly says to ship.
 - Ship with a merge commit (not squash) so `dev` and `main` share history. Merging closes the
   standing PR: fast-forward `dev` to `main`, and open a fresh `dev` → `main` PR when `dev` next moves.
-- Feature branches: `feature/<short-description>` (or `fix/<short-description>`),
-  always branched from the latest `dev`.
+- Feature branches: `<type>/<issue-number>-<short-description>`, e.g. `feature/12-mark-steps-as-done`
+  or `fix/15-menu-overlaps-header`. Types: `feature`, `fix`, `chore`, `docs`. Never a `claude/` (or other
+  tool) prefix: nearly all work is AI-assisted, so it marks nothing. Create a GitHub issue first
+  (the number comes from it), then branch from the latest `dev`.
 
 ### Loop 1: feature testing
 
@@ -95,7 +97,11 @@ Dates use 12-hour time with AM/PM.
 - Project id: `__FIREBASE_PROJECT_ID__`. Web config lives in `src/firebase.ts` (public by design;
   `firestore.rules` is the access control).
 - CI deploys with the `__SECRET_NAME__` GitHub secret.
-- Admins: a doc at `admins/{uid}` grants admin. Created by hand in the Firebase console only.
+- Admins: a doc at `admins/{uid}` grants admin. The owner's verified Google email is listed in
+  `ownerEmails()` in `firestore.rules`; the first time that account signs in, `stores/auth.ts`
+  creates its own admins doc (rules allow only that). Other admins: add their emails to `ownerEmails()`,
+  or create the doc by hand in the console. Removing an email does NOT revoke an existing admin;
+  delete their `admins/{uid}` doc to revoke.
 - Document every collection in the header of `firestore.rules` and keep it in sync.
   Rules default to deny; open access on purpose, per collection.
 - Deploy rules after changing them: `bunx firebase-tools@latest deploy --only firestore`.
@@ -112,6 +118,11 @@ Dates use 12-hour time with AM/PM.
 - Shared types live in `src/types.ts`. App data lives in Firestore, never in `src/`.
 - Do not store a Firebase `User` in reactive state (store a plain snapshot; see `stores/auth.ts`).
 - Run `bun run type-check` before every commit, and `bun run test` (never plain `bun test`).
+- Lint gotchas: `vi.fn<() => void>()` needs type parameters; Firestore data is `DocumentData`, so
+  read it with small mapper functions (`typeof x === 'string' ? x : ''`) instead of `as`.
+- Test Firestore rules with the emulator before shipping rule changes:
+  `bunx firebase-tools@15 emulators:exec --only firestore --project demo-rules "<test command>"`
+  (needs Java) using `@firebase/rules-unit-testing`.
 - Every piece of logic gets Vitest unit tests.
 - Commit after each working step with a clear message.
 

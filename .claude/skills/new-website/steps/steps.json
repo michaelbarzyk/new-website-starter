@@ -1,0 +1,862 @@
+{
+  "version": 1,
+  "values": {
+    "siteName": {
+      "label": "Site name",
+      "example": "Vibesew",
+      "placeholder": "<site name>",
+      "hint": "What visitors see. Any name works."
+    },
+    "projectId": {
+      "label": "Web address / Firebase project id",
+      "example": "vibesew",
+      "placeholder": "<project-id>",
+      "hint": "Becomes <id>.web.app and can NEVER be changed. 6-30 lowercase letters, digits or hyphens, starting with a letter."
+    },
+    "ownerEmail": {
+      "label": "Your Google email (the owner)",
+      "example": "you@gmail.com",
+      "placeholder": "<owner-email>",
+      "hint": "This verified Google account becomes admin automatically on first sign-in."
+    },
+    "repoName": {
+      "label": "Name for your new GitHub repo",
+      "example": "vibesew",
+      "placeholder": "<repo-name>",
+      "hint": "Lowercase letters, digits and hyphens. Defaults to the project id."
+    },
+    "githubUser": {
+      "label": "Your GitHub username",
+      "example": "someone",
+      "placeholder": "<github-username>",
+      "hint": "Optional; makes links go straight to your repo."
+    },
+    "secretName": {
+      "label": "GitHub secret name",
+      "derived": true,
+      "placeholder": "<SECRET_NAME>"
+    },
+    "liveUrl": {
+      "label": "Your live address",
+      "derived": true,
+      "placeholder": "https://<project-id>.web.app"
+    },
+    "consoleUrl": {
+      "label": "Firebase console",
+      "derived": true,
+      "placeholder": "https://console.firebase.google.com/project/<project-id>"
+    },
+    "firestoreUrl": {
+      "label": "Firestore page",
+      "derived": true,
+      "placeholder": "https://console.firebase.google.com/project/<project-id>/firestore"
+    },
+    "authUrl": {
+      "label": "Authentication page",
+      "derived": true,
+      "placeholder": "https://console.firebase.google.com/project/<project-id>/authentication/providers"
+    },
+    "serviceAccountsUrl": {
+      "label": "Service accounts page",
+      "derived": true,
+      "placeholder": "https://console.firebase.google.com/project/<project-id>/settings/serviceaccounts/adminsdk"
+    },
+    "iamUrl": {
+      "label": "Google Cloud IAM page",
+      "derived": true,
+      "placeholder": "https://console.cloud.google.com/iam-admin/iam?project=<project-id>"
+    },
+    "secretsUrl": {
+      "label": "GitHub new-secret page",
+      "derived": true,
+      "placeholder": "https://github.com/<github-username>/<repo-name>/settings/secrets/actions/new"
+    },
+    "briefJson": {
+      "label": "Site brief",
+      "injected": true,
+      "placeholder": "<site brief JSON>"
+    }
+  },
+  "phases": [
+    {
+      "id": "start",
+      "title": "Before you begin"
+    },
+    {
+      "id": "repo",
+      "title": "Your repo"
+    },
+    {
+      "id": "console",
+      "title": "Firebase and GitHub setup"
+    },
+    {
+      "id": "build",
+      "title": "First draft"
+    },
+    {
+      "id": "ship",
+      "title": "Ship and become admin"
+    }
+  ],
+  "steps": [
+    {
+      "id": "google",
+      "phase": "start",
+      "who": "user",
+      "modes": [
+        "phone",
+        "laptop"
+      ],
+      "title": "Create a Google account",
+      "account": "google",
+      "why": "Used for Firebase, where your site lives, and for signing in to it later.",
+      "do": [
+        "Open the Google sign-up page.",
+        "Fill in your name, pick a username and a password, and finish the verification screens."
+      ],
+      "success": "You see a Google page showing your name or initial in the top corner.",
+      "links": [
+        {
+          "label": "Open sign-up",
+          "url": "https://accounts.google.com/signup"
+        }
+      ],
+      "automation": {
+        "level": "manual",
+        "note": ""
+      },
+      "explainer": {
+        "title": "Why a Google account?",
+        "intro": "Firebase, where your site will live, is Google's, so you sign in to it with a Google account. Visitors will also be able to sign in to your site with Google, and the account you use here becomes your site's **owner**. Any Gmail address works.",
+        "sections": [
+          {
+            "heading": "Good to know",
+            "points": [
+              "It's free, and you only need one.",
+              "Use the **same email** for Google, GitHub and Claude if you can. It avoids confusion later.",
+              "Turn on two-step verification: this account will control your website."
+            ]
+          }
+        ],
+        "terms": [
+          {
+            "term": "Owner",
+            "meaning": "The Google account whose email you give us. The first time it signs in to your site, it automatically becomes the site's admin."
+          },
+          {
+            "term": "Gmail",
+            "meaning": "Any @gmail.com address counts as a Google account."
+          }
+        ]
+      }
+    },
+    {
+      "id": "github",
+      "phase": "start",
+      "who": "user",
+      "modes": [
+        "phone",
+        "laptop"
+      ],
+      "title": "Create a GitHub account",
+      "account": "github",
+      "why": "GitHub keeps your website's files and their full history safe.",
+      "do": [
+        "Open the GitHub sign-up page.",
+        "Enter your email, a password and a username.",
+        "Solve the puzzle, then type the verification code GitHub emails you.",
+        "If GitHub asks you to personalise things, skip it."
+      ],
+      "success": "You see your GitHub home page.",
+      "trouble": [
+        {
+          "symptom": "No code arrived",
+          "fix": "Check your spam folder, then tap 'resend'."
+        }
+      ],
+      "links": [
+        {
+          "label": "Open sign-up",
+          "url": "https://github.com/signup"
+        }
+      ],
+      "automation": {
+        "level": "manual",
+        "note": ""
+      },
+      "explainer": {
+        "title": "What is GitHub?",
+        "intro": "GitHub is a website that stores your website's files and remembers **every change ever made** to them, like version history in Google Docs, but for a whole website. Claude reads and changes your files there, and GitHub also builds and publishes your site for you.",
+        "sections": [
+          {
+            "heading": "How a change travels",
+            "points": [
+              "You tell Claude what you want, in plain words.",
+              "Claude makes the change on a **branch** and **pushes** it to your repo.",
+              "Claude opens a **pull request**, and GitHub builds a private **preview** link.",
+              "You look at the preview on your phone and say what to tweak.",
+              "When you're happy you say **ship it**: your changes are **merged** into `main`, and your live site updates in about a minute."
+            ]
+          },
+          {
+            "heading": "Good to know",
+            "points": [
+              "Your repo is **private**: only you can see your files. Your website itself is public.",
+              "Everything is saved, so a mistake can always be undone.",
+              "It's free for what we're doing."
+            ]
+          }
+        ],
+        "terms": [
+          {
+            "term": "Repository (repo)",
+            "meaning": "Your website's folder on GitHub. One repo is one website."
+          },
+          {
+            "term": "Commit",
+            "meaning": "A saved checkpoint with a short note about what changed. You can always go back to one."
+          },
+          {
+            "term": "Branch",
+            "meaning": "A separate copy of your site where changes are tried out safely. `main` is your live site; `dev` is where work happens first."
+          },
+          {
+            "term": "Push",
+            "meaning": "Send changes up to GitHub."
+          },
+          {
+            "term": "Pull",
+            "meaning": "Bring the latest changes down from GitHub to where you're working."
+          },
+          {
+            "term": "Pull request (PR)",
+            "meaning": "A request that says 'please add my changes.' GitHub shows what changed and builds a preview link."
+          },
+          {
+            "term": "Preview",
+            "meaning": "A private link to see your changes before anyone else can."
+          },
+          {
+            "term": "Merge",
+            "meaning": "Combine the changes from one branch into another once they look good."
+          },
+          {
+            "term": "Ship",
+            "meaning": "Merge your changes into `main` so the live site updates. 'Ship it' is what you tell Claude."
+          }
+        ]
+      }
+    },
+    {
+      "id": "claude-plan",
+      "phase": "start",
+      "who": "user",
+      "modes": [
+        "phone",
+        "laptop"
+      ],
+      "title": "Get a paid Claude plan",
+      "account": "claude",
+      "why": "Claude Code is not on the free plan, so you need Pro or higher.",
+      "do": [
+        "Install the Claude app, or open claude.ai, and sign up.",
+        "Already on the free plan? Open your profile and tap **Upgrade**.",
+        "Choose **Pro** (or higher) and enter payment details."
+      ],
+      "success": "You see a **Code** tab in the app.",
+      "trouble": [
+        {
+          "symptom": "No Code tab",
+          "fix": "Update the app, or use claude.ai/code in your browser."
+        }
+      ],
+      "links": [
+        {
+          "label": "Open claude.ai",
+          "url": "https://claude.ai"
+        }
+      ],
+      "automation": {
+        "level": "manual",
+        "note": ""
+      },
+      "explainer": {
+        "title": "What is Claude Code?",
+        "intro": "Claude is the AI that builds your website with you. **Claude Code** is the part that can work on your files in GitHub. You describe what you want in plain words, and it writes and changes the site for you. It comes with a paid plan (Pro or higher).",
+        "sections": [
+          {
+            "heading": "Who does what",
+            "points": [
+              "**Claude** writes the code, saves changes, opens pull requests and builds previews.",
+              "**You** decide what you want, look at previews, say **ship it**, and do the few steps that need your own accounts, like switching things on in Firebase.",
+              "Claude never needs your passwords or keys. If anything asks you to paste a secret key into the chat, don't."
+            ]
+          }
+        ],
+        "terms": [
+          {
+            "term": "Code tab",
+            "meaning": "Where Claude works on your repo inside the Claude app."
+          },
+          {
+            "term": "Skill",
+            "meaning": "A set of instructions Claude follows. The new-website skill walks you through building a site one step at a time."
+          },
+          {
+            "term": "Plan",
+            "meaning": "Pro, Max or a Team seat. Claude Code isn't on the free plan."
+          },
+          {
+            "term": "Prompt",
+            "meaning": "Just a message to Claude. Plain words are fine, like 'make the heading bigger'."
+          }
+        ]
+      }
+    },
+    {
+      "id": "firebase-terms",
+      "phase": "start",
+      "who": "user",
+      "modes": [
+        "phone",
+        "laptop"
+      ],
+      "title": "Accept Firebase's terms",
+      "account": "firebase",
+      "why": "One tap now saves you a confusing error later.",
+      "do": [
+        "Signed in to Google, open the Firebase console.",
+        "If a terms screen appears, accept it. Do not create a project yet."
+      ],
+      "success": "You see 'Create a project' or 'Add project'. That is enough; close it.",
+      "links": [
+        {
+          "label": "Open Firebase",
+          "url": "https://console.firebase.google.com"
+        }
+      ],
+      "automation": {
+        "level": "manual",
+        "note": ""
+      },
+      "explainer": {
+        "title": "What is Firebase?",
+        "intro": "Firebase is Google's free toolbox for websites. It puts your site on the internet at a real web address, stores your data, and lets visitors sign in with Google. You'll create one Firebase **project** for each website.",
+        "sections": [
+          {
+            "heading": "What you'll do with it later",
+            "points": [
+              "Create a project and pick its address.",
+              "Switch on the database and Google sign-in.",
+              "Make a key that lets GitHub publish your site for you. This key is the one secret in the whole process: it goes only into a GitHub secret, never into a chat.",
+              "Accepting Firebase's terms now, once, avoids a confusing error later."
+            ]
+          }
+        ],
+        "terms": [
+          {
+            "term": "Project",
+            "meaning": "Your website's home inside Firebase. Its **project ID** becomes your web address (like `yourname.web.app`) and can never be changed."
+          },
+          {
+            "term": "Hosting",
+            "meaning": "Puts your site on the internet at that address."
+          },
+          {
+            "term": "Firestore",
+            "meaning": "A database: where your site keeps things like messages or photos' details."
+          },
+          {
+            "term": "Authentication",
+            "meaning": "Lets visitors sign in, for example with Google."
+          },
+          {
+            "term": "Security rules",
+            "meaning": "Rules that decide who can read or write your data. They're locked down by default."
+          },
+          {
+            "term": "Console",
+            "meaning": "The Firebase website where you create the project and flip the switches."
+          },
+          {
+            "term": "Spark plan",
+            "meaning": "Firebase's free plan. It covers a hobby site, and no credit card is needed."
+          }
+        ]
+      }
+    },
+    {
+      "id": "connect",
+      "phase": "start",
+      "who": "user",
+      "modes": [
+        "phone",
+        "laptop"
+      ],
+      "title": "Connect Claude to GitHub",
+      "why": "This lets Claude see and change your website's files.",
+      "do": [
+        "Open the Claude app and tap the **Code** tab.",
+        "Tap **Connect GitHub**. Your browser opens.",
+        "Sign in to GitHub with the account you will use for everything. If your browser is already signed in to a different GitHub account, sign it out first.",
+        "On the 'Authorize Claude' screen, tap **Authorize**.",
+        "On the install screen, under **Repository access** choose **All repositories**, then tap **Install**. (Choosing only some repositories is the most common cause of 'repository not found' later.)",
+        "Enter your GitHub password if it asks, and you are sent back to the Claude app."
+      ],
+      "success": "In the Code tab you see a text box with a repository selector under it.",
+      "trouble": [
+        {
+          "symptom": "It still says Connect GitHub",
+          "fix": "Repeat from the second line."
+        },
+        {
+          "symptom": "You already picked specific repositories",
+          "fix": "Open github.com/settings/installations, tap Claude, Configure, choose All repositories, Save."
+        }
+      ],
+      "links": [
+        {
+          "label": "GitHub app settings",
+          "url": "https://github.com/settings/installations"
+        }
+      ],
+      "automation": {
+        "level": "manual",
+        "note": ""
+      }
+    },
+    {
+      "id": "create-repo",
+      "phase": "repo",
+      "who": "user",
+      "modes": [
+        "phone",
+        "laptop"
+      ],
+      "title": "Create your site's repo from the starter",
+      "why": "Your site's files live in your own GitHub repo; every change is saved there and can be undone.",
+      "do": [
+        "Open the starter template (link below) and tap **Use this template → Create a new repository** (use 'Request desktop site' if you don't see it).",
+        "Name it **{{repoName}}** (lowercase letters, digits, hyphens). Choose **Private**. Tap **Create repository**."
+      ],
+      "success": "You land on your new repo's page, and it lists a `.claude` folder and a `CLAUDE.md`.",
+      "copy": [
+        {
+          "label": "Repo name",
+          "value": "{{repoName}}"
+        }
+      ],
+      "automation": {
+        "level": "github",
+        "note": "Can be done by the site with GitHub's 'generate from template' API and the user's GitHub token."
+      },
+      "trouble": [
+        {
+          "symptom": "You can't see the Use this template button",
+          "fix": "Open your browser menu, tap **Request desktop site**, and reload."
+        }
+      ],
+      "links": [
+        {
+          "label": "Open the starter template",
+          "url": "https://github.com/michaelbarzyk/new-website-starter"
+        }
+      ]
+    },
+    {
+      "id": "save-brief",
+      "phase": "repo",
+      "who": "user",
+      "modes": [
+        "phone",
+        "laptop"
+      ],
+      "title": "Save your site brief in the repo",
+      "why": "Claude reads this file so it already knows your answers and doesn't ask them again.",
+      "do": [
+        "Open your new repo **{{repoName}}** on github.com and tap **Add file → Create new file**.",
+        "In the file name box type `.claude/site-brief.json` (typing the slash makes the folder).",
+        "Paste your site brief (use the copy button below), then tap **Commit changes**."
+      ],
+      "success": "The file .claude/site-brief.json shows in your repo.",
+      "trouble": [
+        {
+          "symptom": "The brief is not ready",
+          "fix": "Fill in your site name above first, then come back."
+        }
+      ],
+      "copy": [
+        {
+          "label": "Copy my site brief",
+          "value": "{{briefJson}}"
+        }
+      ],
+      "automation": {
+        "level": "github",
+        "note": "Can be done by the site: write the file with GitHub's contents API."
+      }
+    },
+    {
+      "id": "open-claude",
+      "phase": "repo",
+      "who": "user",
+      "modes": [
+        "phone",
+        "laptop"
+      ],
+      "title": "Open your repo in Claude",
+      "do": [
+        "In the Claude app, open the **Code** tab.",
+        "Tap the repository selector under the text box and choose **{{repoName}}**. If it's missing, wait a minute and refresh, or reconnect GitHub and choose **All repositories**.",
+        "Send the message below. The first start can take a minute or two."
+      ],
+      "success": "Claude confirms your answers in one message instead of asking everything again.",
+      "automation": {
+        "level": "manual",
+        "note": ""
+      },
+      "copy": [
+        {
+          "label": "Copy the message",
+          "value": "Use the new-website skill to build me a website. My site brief is in .claude/site-brief.json."
+        }
+      ],
+      "trouble": [
+        {
+          "symptom": "The repo is missing from the list",
+          "fix": "Wait a minute, pull down to refresh, or fully close and reopen the app. Still missing? Redo the Repository access part of the connect step."
+        },
+        {
+          "symptom": "Claude explains websites in general instead",
+          "fix": "Send: Read CLAUDE.md in this repo and follow it."
+        }
+      ]
+    },
+    {
+      "id": "firebase-project",
+      "phase": "console",
+      "who": "user",
+      "modes": [
+        "phone",
+        "laptop"
+      ],
+      "title": "Create the Firebase project",
+      "why": "Firebase hosts your site, database and sign-in, free at this size.",
+      "do": [
+        "Open the Firebase console and tap **Add project**.",
+        "Name it **{{siteName}}**. Under the name there is an editable **Project ID**: tap the pencil and set it to **{{projectId}}**. It becomes your free address `{{liveUrl}}` and can **never be changed**.",
+        "Turn **Gemini in Firebase OFF** and **Google Analytics OFF**. Accept the terms. If it offers billing or an upgrade, skip it; the free plan is enough."
+      ],
+      "success": "You see the new project's overview page, and Project settings shows the Project ID {{projectId}}.",
+      "trouble": [
+        {
+          "symptom": "That Project ID is taken",
+          "fix": "Add a short suffix (like `{{projectId}}-1`) and tell Claude the new id; the address changes with it."
+        },
+        {
+          "symptom": "The id has random letters added",
+          "fix": "Tap the pencil and edit it before you tap Create; it can't be changed later."
+        }
+      ],
+      "links": [
+        {
+          "label": "Firebase console",
+          "url": "https://console.firebase.google.com"
+        }
+      ],
+      "copy": [
+        {
+          "label": "Project ID",
+          "value": "{{projectId}}"
+        }
+      ],
+      "automation": {
+        "level": "google",
+        "note": "UNVERIFIED: Firebase management API (projects + addFirebase) with the user's Google token."
+      }
+    },
+    {
+      "id": "firestore",
+      "phase": "console",
+      "who": "user",
+      "modes": [
+        "phone",
+        "laptop"
+      ],
+      "title": "Create the database",
+      "do": [
+        "Open the menu **Databases & Storage → Firestore** (older console: Build → Firestore Database) and tap **Create database**.",
+        "Choose **Standard**, location **nam5 (United States)**, and **Production mode**. Tap **Create**."
+      ],
+      "success": "You see an empty Firestore with a **Data** tab.",
+      "links": [
+        {
+          "label": "Firestore page",
+          "url": "{{firestoreUrl}}"
+        }
+      ],
+      "automation": {
+        "level": "google",
+        "note": "UNVERIFIED: Firestore admin API; the API may need enabling first."
+      }
+    },
+    {
+      "id": "auth-google",
+      "phase": "console",
+      "who": "user",
+      "modes": [
+        "phone",
+        "laptop"
+      ],
+      "title": "Turn on Google sign-in",
+      "why": "Visitors sign in with Google so you know who sent each message and can reply. Browsing stays public.",
+      "do": [
+        "Open the menu **Security → Authentication** (older console: Build → Authentication) and tap **Get started**.",
+        "Open **Sign-in method**, tap **Google**, and switch **Enable** on.",
+        "For the **public-facing name**, type **{{siteName}}** (any name works; it shows on the Google sign-in popup). For the **support email**, pick your own email. Tap **Save**.",
+        "Leave **Anonymous** OFF."
+      ],
+      "success": "Google shows as **Enabled** in the Sign-in method list.",
+      "links": [
+        {
+          "label": "Authentication page",
+          "url": "{{authUrl}}"
+        }
+      ],
+      "automation": {
+        "level": "google",
+        "note": "UNVERIFIED and probably the hardest step: enabling Google needs an OAuth client. May stay as guided taps."
+      }
+    },
+    {
+      "id": "web-app",
+      "phase": "console",
+      "who": "user",
+      "modes": [
+        "phone",
+        "laptop"
+      ],
+      "title": "Register the web app and copy its settings",
+      "why": "These six values are your site's address-book entry for Firebase.",
+      "do": [
+        "On **Project overview**, tap **Add app** (under the project name) and choose the web icon `</>`.",
+        "Nickname: **{{siteName}}**. Leave **Firebase Hosting unchecked**. Tap **Register app**.",
+        "It asks **npm or script tag**: choose **npm**. Ignore the install commands.",
+        "Copy the six values from `firebaseConfig` (apiKey, authDomain, projectId, storageBucket, messagingSenderId, appId) and paste them into Claude. They are public by design, so this is safe to share."
+      ],
+      "success": "You've sent all six values to Claude.",
+      "automation": {
+        "level": "google",
+        "note": "UNVERIFIED: webApps.create and webApps.getConfig in the Firebase management API."
+      }
+    },
+    {
+      "id": "deploy-key",
+      "phase": "console",
+      "who": "user",
+      "modes": [
+        "phone",
+        "laptop"
+      ],
+      "title": "Make the deploy key (the only sensitive step)",
+      "why": "This key lets GitHub publish your site and rules for you.",
+      "do": [
+        "Open **Project settings** (gear) → **Service accounts** and tap **Generate new private key**, then **Generate key**. A `.json` file downloads to your phone.",
+        "Ignore the 'Admin SDK configuration snippet' above the button; it's only example code.",
+        "Copy ALL the text in the file: open your browser's downloads list and tap the file, or use the Files app (iPhone: preview it, or Share → Save to Notes, then copy).",
+        "**Never paste this key into the Claude chat or any website.** It goes only into a GitHub secret in the next steps."
+      ],
+      "success": "You have the file's text copied and ready to paste in the GitHub step.",
+      "trouble": [
+        {
+          "symptom": "Can't open or copy the file",
+          "fix": "Try the other route (browser downloads list vs Files app), or do this step on a computer."
+        }
+      ],
+      "links": [
+        {
+          "label": "Service accounts page",
+          "url": "{{serviceAccountsUrl}}"
+        }
+      ],
+      "automation": {
+        "level": "google",
+        "note": "UNVERIFIED: IAM service-account keys API, straight to a GitHub secret. Organisations may block key creation; Workload Identity Federation avoids keys."
+      }
+    },
+    {
+      "id": "iam-roles",
+      "phase": "console",
+      "who": "user",
+      "modes": [
+        "phone",
+        "laptop"
+      ],
+      "title": "Give the key two permissions",
+      "why": "The key starts with few permissions. These two let it check that the database is on and publish your rules.",
+      "do": [
+        "Open the Google Cloud IAM page (link below) and sign in with the same Google account. Accept any welcome screen.",
+        "Tap the pencil on the row **firebase-adminsdk-…**, then **Add another role** and add **Service Usage Consumer**.",
+        "Tap **Add another role** again and add **Firebase Rules Admin** (type `rules` in the role box; if it's missing, **Firebase Admin** also works but is broader). Tap **Save**.",
+        "Keep its existing roles. Leave the **Owner (Legacy)** row (that's you) alone. Don't add any Cloud Datastore roles.",
+        "Wait 1 to 2 minutes: Google applies these slowly."
+      ],
+      "success": "The firebase-adminsdk row lists both new roles alongside its existing ones.",
+      "trouble": [
+        {
+          "symptom": "Deploy fails with `Permission denied to get service firestore.googleapis.com`",
+          "fix": "Service Usage Consumer is missing."
+        },
+        {
+          "symptom": "Deploy fails with `firebaserules.googleapis.com ... :test`",
+          "fix": "Firebase Rules Admin is missing."
+        },
+        {
+          "symptom": "It still fails right after you added the role",
+          "fix": "Wait 2 minutes and re-run the failed job."
+        }
+      ],
+      "links": [
+        {
+          "label": "Google Cloud IAM page",
+          "url": "{{iamUrl}}"
+        }
+      ],
+      "automation": {
+        "level": "google",
+        "note": "UNVERIFIED: Resource Manager setIamPolicy."
+      }
+    },
+    {
+      "id": "github-secret",
+      "phase": "console",
+      "who": "user",
+      "modes": [
+        "phone",
+        "laptop"
+      ],
+      "title": "Save the key as a GitHub secret",
+      "why": "Only GitHub's CI can use the secret; it's hidden once saved.",
+      "do": [
+        "Open your repo on github.com (use 'Desktop site' if the phone view hides Settings) → **Settings → Secrets and variables → Actions → New repository secret**.",
+        "Name: exactly **{{secretName}}**. Value: paste the whole key text. Tap **Add secret**.",
+        "Delete the downloaded file from your phone."
+      ],
+      "success": "The secret {{secretName}} shows in the repo's Actions secrets list.",
+      "trouble": [
+        {
+          "symptom": "The deploy later says the secret is missing or empty",
+          "fix": "The name must match exactly and the value must be the whole JSON text."
+        }
+      ],
+      "links": [
+        {
+          "label": "New secret page",
+          "url": "{{secretsUrl}}"
+        }
+      ],
+      "copy": [
+        {
+          "label": "Secret name",
+          "value": "{{secretName}}"
+        }
+      ],
+      "automation": {
+        "level": "github",
+        "note": "Can be done by the site: encrypt client-side and PUT the secret with the user's GitHub token."
+      }
+    },
+    {
+      "id": "scaffold",
+      "phase": "build",
+      "who": "claude",
+      "modes": [
+        "phone",
+        "laptop"
+      ],
+      "title": "Claude builds your first draft",
+      "do": [
+        "Claude scaffolds your site into **{{repoName}}** with your real Firebase settings and owner email **{{ownerEmail}}**, then runs the format, lint, test and build checks. All must pass before moving on.",
+        "Claude opens a pull request into `main` for this first release (later changes go through `dev`). GitHub checks it and posts a private **preview link**."
+      ],
+      "success": "Claude shows you the preview link. Open it on your phone.",
+      "automation": {
+        "level": "ci",
+        "note": "Could run in GitHub Actions from the repo's site-brief.json, with no Claude needed for scaffolding."
+      }
+    },
+    {
+      "id": "ship",
+      "phase": "ship",
+      "who": "user",
+      "modes": [
+        "phone",
+        "laptop"
+      ],
+      "title": "Ship it",
+      "why": "Nothing goes live until you say so, so you can't break your real site while experimenting.",
+      "do": [
+        "Look around the preview. Tell Claude what to change in plain words (for example 'make the heading bigger').",
+        "When you're happy, tell Claude **ship it**. GitHub publishes your database rules first, then your site (about a minute).",
+        "Say **check** and Claude confirms both finished."
+      ],
+      "success": "Both deploy jobs show a green check, and {{liveUrl}} loads your site.",
+      "trouble": [
+        {
+          "symptom": "Google sign-in doesn't work on the preview link",
+          "fix": "Expected: preview addresses aren't trusted for sign-in. Test it on the live address."
+        },
+        {
+          "symptom": "The rules job fails with a 403",
+          "fix": "See the permission steps above and re-run after 2 minutes."
+        }
+      ],
+      "links": [
+        {
+          "label": "Your live site",
+          "url": "{{liveUrl}}"
+        }
+      ],
+      "automation": {
+        "level": "github",
+        "note": "Merge the pull request and poll check results through the GitHub API."
+      }
+    },
+    {
+      "id": "verify-admin",
+      "phase": "ship",
+      "who": "user",
+      "modes": [
+        "phone",
+        "laptop"
+      ],
+      "title": "Sign in and become admin",
+      "do": [
+        "Open **{{liveUrl}}** and tap **Sign in** with **{{ownerEmail}}**.",
+        "The **Admin** link and edit buttons appear. Nothing to set up: your email is on the site's owner list, so your first sign-in makes you admin."
+      ],
+      "success": "You see the Admin link while signed in.",
+      "trouble": [
+        {
+          "symptom": "No Admin link",
+          "fix": "Check both deploys finished, that you signed in with {{ownerEmail}} (a verified Google account), then close the tab, reopen the site and sign in again."
+        },
+        {
+          "symptom": "'unauthorized domain' on sign-in",
+          "fix": "Firebase → Authentication → Settings → Authorized domains → add the address you're on."
+        }
+      ],
+      "links": [
+        {
+          "label": "Your live site",
+          "url": "{{liveUrl}}"
+        }
+      ],
+      "automation": {
+        "level": "manual",
+        "note": ""
+      }
+    }
+  ]
+}

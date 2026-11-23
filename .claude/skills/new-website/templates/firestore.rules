@@ -7,7 +7,8 @@ rules_version = '2';
 // Collection: admins
 // Document ID: Firebase Auth uid. Existence of the doc grants admin.
 // Fields: role: string ("admin"), informational only; rules check existence.
-// Created by hand in the Firebase console only.
+// Created automatically the first time an owner (see ownerEmails) signs in; otherwise by hand
+// in the Firebase console.
 //
 // Everything else is denied until a rule below opens it on purpose.
 // ===============================================================
@@ -24,11 +25,20 @@ service cloud.firestore {
         && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
+    // Verified Google emails that may make themselves admin by signing in. Edit to add owners.
+    function ownerEmails() {
+      return ['__OWNER_EMAIL__'];
+    }
+
     // A signed-in user can read only their own admins doc (to learn whether they are admin).
-    // Nobody can write admins from the app.
+    // An owner can create their own doc once; nobody else can write admins from the app.
     match /admins/{uid} {
       allow get: if isAuthenticated() && request.auth.uid == uid;
-      allow list, create, update, delete: if false;
+      allow create: if isAuthenticated()
+        && request.auth.uid == uid
+        && request.auth.token.email_verified == true
+        && request.auth.token.email in ownerEmails();
+      allow list, update, delete: if false;
     }
 
     // Default deny for everything else.

@@ -9,7 +9,7 @@ By the end you will have:
 - Claude Code ready to build features with you
 
 Time: 30–45 minutes the first time. Claude does most of it; steps you must do yourself are
-marked **YOU**. Worked example: https://newsite-test-mb.web.app (built with these exact steps).
+marked **YOU**. Worked examples: https://newsite-test-mb.web.app (laptop path) and https://vibesew-test00.web.app (phone path).
 
 Cost: free. Firebase's free plan (Spark) covers hosting, Firestore and Auth at hobby scale, and
 GitHub private repos and Actions are free at this size. No credit card is needed.
@@ -91,7 +91,8 @@ This lets Claude see and change your website's files. You'll do it from the Clau
 
 Your site needs its own space on GitHub (a "repository", or repo). We copy a ready-made starter.
 
-1. In your **browser**, go to https://github.com/michaelbarzyk/new-website-starter.
+1. In your **browser**, go to https://github.com/michaelbarzyk/new-website-starter (the starter template, generated from the
+   `michaelbarzyk/catch-a-vibecode` repo; you need access to it).
 2. Tap the green **Use this template** button (top right) → **Create a new repository**.
    ⚠️ Can't see it? Open your browser menu and tap **Request desktop site**, then reload.
 3. **Repository name:** type a short name with only lowercase letters, numbers and hyphens, like
@@ -127,21 +128,98 @@ Claude asks about five short things:
 
 Answer by typing the numbers. Then Claude explains how setup works and walks you through it.
 
-### Step 6: The Firebase and GitHub taps Claude will ask for
+### Step 6: Set up Firebase and GitHub (Claude guides each tap)
 
-Claude can't do these for you, so it tells you exactly what to tap, one at a time:
-- Create your Firebase project, database, and Google sign-in (in your browser).
-- Make one secret key and save it in your GitHub repo. **Never paste the secret key into the Claude chat.** It only goes into the box GitHub gives you.
-- Add yourself as admin of your site, so you can sign in and edit it.
+Claude can't do these for you, so it gives you one tap-by-tap step at a time and waits for you to reply **done**.
+Do them in this order. Claude builds your first draft while you work, so you won't be waiting for nothing.
 
-After these, Claude shows you a **preview link**: open it, and that's your site.
+<!-- steps:begin console -->
+**1. Create the Firebase project**
+*Firebase hosts your site, database and sign-in, free at this size.*
 
-### Step 7: Ship it and keep changing it
+- Open the Firebase console and tap **Add project**.
+- Name it **<site name>**. Under the name there is an editable **Project ID**: tap the pencil and set it to **<project-id>**. It becomes your free address `https://<project-id>.web.app` and can **never be changed**.
+- Turn **Gemini in Firebase OFF** and **Google Analytics OFF**. Accept the terms. If it offers billing or an upgrade, skip it; the free plan is enough.
+- Link: [Firebase console](https://console.firebase.google.com)
+- Value: Project ID = `<project-id>`
+- ✅ Worked when: You see the new project's overview page, and Project settings shows the Project ID <project-id>.
+- ⚠️ That Project ID is taken → Add a short suffix (like `<project-id>-1`) and tell Claude the new id; the address changes with it.
+- ⚠️ The id has random letters added → Tap the pencil and edit it before you tap Create; it can't be changed later.
+
+**2. Create the database**
+
+- Open the menu **Databases & Storage → Firestore** (older console: Build → Firestore Database) and tap **Create database**.
+- Choose **Standard**, location **nam5 (United States)**, and **Production mode**. Tap **Create**.
+- Link: [Firestore page](https://console.firebase.google.com/project/<project-id>/firestore)
+- ✅ Worked when: You see an empty Firestore with a **Data** tab.
+
+**3. Turn on Google sign-in**
+*Visitors sign in with Google so you know who sent each message and can reply. Browsing stays public.*
+
+- Open the menu **Security → Authentication** (older console: Build → Authentication) and tap **Get started**.
+- Open **Sign-in method**, tap **Google**, and switch **Enable** on.
+- For the **public-facing name**, type **<site name>** (any name works; it shows on the Google sign-in popup). For the **support email**, pick your own email. Tap **Save**.
+- Leave **Anonymous** OFF.
+- Link: [Authentication page](https://console.firebase.google.com/project/<project-id>/authentication/providers)
+- ✅ Worked when: Google shows as **Enabled** in the Sign-in method list.
+
+**4. Register the web app and copy its settings**
+*These six values are your site's address-book entry for Firebase.*
+
+- On **Project overview**, tap **Add app** (under the project name) and choose the web icon `</>`.
+- Nickname: **<site name>**. Leave **Firebase Hosting unchecked**. Tap **Register app**.
+- It asks **npm or script tag**: choose **npm**. Ignore the install commands.
+- Copy the six values from `firebaseConfig` (apiKey, authDomain, projectId, storageBucket, messagingSenderId, appId) and paste them into Claude. They are public by design, so this is safe to share.
+- ✅ Worked when: You've sent all six values to Claude.
+
+**5. Make the deploy key (the only sensitive step)**
+*This key lets GitHub publish your site and rules for you.*
+
+- Open **Project settings** (gear) → **Service accounts** and tap **Generate new private key**, then **Generate key**. A `.json` file downloads to your phone.
+- Ignore the 'Admin SDK configuration snippet' above the button; it's only example code.
+- Copy ALL the text in the file: open your browser's downloads list and tap the file, or use the Files app (iPhone: preview it, or Share → Save to Notes, then copy).
+- **Never paste this key into the Claude chat or any website.** It goes only into a GitHub secret in the next steps.
+- Link: [Service accounts page](https://console.firebase.google.com/project/<project-id>/settings/serviceaccounts/adminsdk)
+- ✅ Worked when: You have the file's text copied and ready to paste in the GitHub step.
+- ⚠️ Can't open or copy the file → Try the other route (browser downloads list vs Files app), or do this step on a computer.
+
+**6. Give the key two permissions**
+*The key starts with few permissions. These two let it check that the database is on and publish your rules.*
+
+- Open the Google Cloud IAM page (link below) and sign in with the same Google account. Accept any welcome screen.
+- Tap the pencil on the row **firebase-adminsdk-…**, then **Add another role** and add **Service Usage Consumer**.
+- Tap **Add another role** again and add **Firebase Rules Admin** (type `rules` in the role box; if it's missing, **Firebase Admin** also works but is broader). Tap **Save**.
+- Keep its existing roles. Leave the **Owner (Legacy)** row (that's you) alone. Don't add any Cloud Datastore roles.
+- Wait 1 to 2 minutes: Google applies these slowly.
+- Link: [Google Cloud IAM page](https://console.cloud.google.com/iam-admin/iam?project=<project-id>)
+- ✅ Worked when: The firebase-adminsdk row lists both new roles alongside its existing ones.
+- ⚠️ Deploy fails with `Permission denied to get service firestore.googleapis.com` → Service Usage Consumer is missing.
+- ⚠️ Deploy fails with `firebaserules.googleapis.com ... :test` → Firebase Rules Admin is missing.
+- ⚠️ It still fails right after you added the role → Wait 2 minutes and re-run the failed job.
+
+**7. Save the key as a GitHub secret**
+*Only GitHub's CI can use the secret; it's hidden once saved.*
+
+- Open your repo on github.com (use 'Desktop site' if the phone view hides Settings) → **Settings → Secrets and variables → Actions → New repository secret**.
+- Name: exactly **<SECRET_NAME>**. Value: paste the whole key text. Tap **Add secret**.
+- Delete the downloaded file from your phone.
+- Link: [New secret page](https://github.com/<github-username>/<repo-name>/settings/secrets/actions/new)
+- Value: Secret name = `<SECRET_NAME>`
+- ✅ Worked when: The secret <SECRET_NAME> shows in the repo's Actions secrets list.
+- ⚠️ The deploy later says the secret is missing or empty → The name must match exactly and the value must be the whole JSON text.
+<!-- steps:end console -->
+
+After these, Claude shows you a **preview link**: open it, and that's your site. (Google sign-in doesn't work on preview links;
+you'll test it on the live address.)
+
+### Step 7: Ship it and become admin
 
 1. Open the preview link on your phone and look around.
 2. Tell Claude what to change in plain words: "make the title bigger", "add a menu page".
-3. When you're happy, tell Claude **"ship it"**. Your site goes live at its real address.
-4. From then on: describe a change, check the preview, say "ship it".
+3. When you're happy, tell Claude **"ship it"**. CI publishes your database rules, then your site.
+4. Open your live address, tap **Sign in**, and use the **owner email** you gave Claude. The **Admin** link and edit buttons appear.
+   No console clicks needed: your email is on the site's owner list, so the first sign-in makes you admin.
+5. From then on: describe a change, check the preview, say "ship it".
 
 If you'd rather use a computer, follow the full guide below.
 
@@ -183,7 +261,8 @@ command for your system when something is missing.
 
 ## Part 1: Get the skill
 
-The skill is private, so you must be a collaborator (the owner adds you; accept the email invite).
+The skill and these tutorials live in the **`michaelbarzyk/catch-a-vibecode`** repo, under `.claude/skills/new-website/`. That repo is
+the source of truth: improvements are made there. The repo is private, so you must be a collaborator (the owner adds you; accept the email invite).
 
 **YOU**, in your terminal:
 
@@ -193,10 +272,11 @@ brew install gh                      # Mac
 # Windows (Ubuntu): see https://github.com/cli/cli/blob/trunk/docs/install_linux.md
 
 gh auth login                        # GitHub.com → HTTPS → Login with a web browser
-gh repo clone michaelbarzyk/claude-skill-new-website ~/.claude/skills/new-website
+gh repo clone michaelbarzyk/catch-a-vibecode ~/catch-a-vibecode
+mkdir -p ~/.claude/skills && ln -s ~/catch-a-vibecode/.claude/skills/new-website ~/.claude/skills/new-website
 ```
 
-Check: `ls ~/.claude/skills/new-website` shows `SKILL.md`. Restart Claude Code so it sees the skill.
+Check: `ls ~/.claude/skills/new-website` shows `SKILL.md`. Restart Claude Code so it sees the skill. To update later: `git -C ~/catch-a-vibecode pull`.
 
 ## Part 2: Log in to the tools
 
@@ -269,24 +349,19 @@ and opens your first pull request `dev → main`. Wait for the checks to pass; C
 Tell Claude to merge. Pushing to `main` deploys the live site; Claude waits for the deploy and checks it.
 From now on, `main` changes only when you say "ship it".
 
-## Part 5: Turn on sign-in and make yourself admin  (**YOU**)
+## Part 5: Turn on sign-in and become admin  (**YOU**)
 
 **Enable Google sign-in**
 
-1. Console → **Authentication** → **Get started**.
-2. **Sign-in method** tab → **Google** → toggle **Enable** → choose a support email → **Save**.
+1. Console → **Authentication** (menu: Security → Authentication) → **Get started**.
+2. **Sign-in method** tab → **Google** → toggle **Enable** → public-facing name (your site's name) → support email → **Save**.
+   Leave **Anonymous** off.
 
-**Become admin**
+**Become admin (automatic)**
 
-1. Open your live site and click **Admin sign-in**. Sign in with Google. It says *"not an admin"*. That's expected.
-2. Console → Authentication → **Users** → copy your **User UID**.
-3. Console → Firestore Database → **Start collection**:
-   - Collection ID: `admins` → **Next**
-   - Document ID: paste your UID (not "Auto-ID")
-   - Field `role`, type `string`, value `admin` → **Save**
-4. Refresh the site (sign out and in again if needed). It now says *"admin"*.
-
-Admin documents can only be made in the console, never by the app. That's deliberate.
+Claude put your Google email on the site's owner list (`ownerEmails()` in `firestore.rules`). Open your live site, click
+**Sign in** with that account, and the **Admin** link appears. If you didn't give Claude an email, ask it to add yours and
+ship the rules, or create the admin doc by hand (`reference/manual-steps.md`).
 
 ## Part 6: Build things (the fun part)
 
@@ -296,7 +371,7 @@ Describe what you want:
 
 Claude then:
 
-1. creates a `feature/...` branch off `dev` and opens a pull request into `dev` right away,
+1. creates a `feature/<issue#>-<description>` branch off `dev` (never `claude/...`) and opens a pull request into `dev` right away,
 2. posts the **preview link** (open it on your phone too),
 3. applies your changes on the same branch until you're happy,
 4. runs a code review and fixes what you agree with, then merges into `dev`.
@@ -318,7 +393,7 @@ Rules Claude follows in your project live in `CLAUDE.md`. Add your own (design, 
 | First CI run on `main` failed before the key existed | Ignore it; the next push deploys. |
 | Claude says `repository ... could not be found` | Claude is connected to a different GitHub account, or hasn't been given this repo. Disconnect GitHub in Claude and reconnect while signed in as the repo's owner; choose **All repositories** when GitHub asks which to allow, so repos you create later also show up. Then refresh the repo list. |
 | Sign-in popup does nothing | Allow popups. For custom domains, add them under Auth → Settings → Authorized domains. |
-| Site says "not an admin" after adding the doc | The document ID must equal your User UID exactly; sign out and back in. |
+| No Admin link after signing in | Check the deploy finished, your email matches the owner list (lower-case, verified Google email), then hard-refresh and sign out/in. |
 | No preview link on a PR | Previews only run for branches in the same repo, and need the deploy key from 4b. |
 
 ## Cleaning up a practice project
@@ -332,3 +407,8 @@ Rules Claude follows in your project live in `CLAUDE.md`. Add your own (design, 
 Send them Part 0 and this repo. Each person needs their **own** Firebase project and GitHub repo
 (the CI key and admin list belong to whoever created them), so they run the skill themselves
 rather than reusing your site.
+
+## Troubleshooting more
+
+See `reference/troubleshooting.md` for every error we have hit (403 permission errors on the rules deploy, "unauthorized domain",
+re-run timing, lint gotchas) and its fix.

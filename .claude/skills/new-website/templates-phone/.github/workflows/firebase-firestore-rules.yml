@@ -1,24 +1,23 @@
-# Phone/cloud mode only: deploys firestore.rules and indexes from CI, so nobody needs a local
-# Firebase login. Runs when those files change on main, or by hand (Actions tab → Run workflow).
-name: Deploy Firestore rules
+# Phone/cloud mode: re-run the rules deploy by hand (Actions tab -> Run workflow), e.g. after fixing
+# IAM roles. Normal deploys happen in "Deploy to Firebase Hosting on merge".
+name: Deploy Firestore rules (manual)
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - firestore.rules
-      - firestore.indexes.json
   workflow_dispatch:
+permissions:
+  contents: read
 jobs:
   deploy_rules:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
       - name: Write service account key
         env:
           KEY_JSON: ${{ secrets.__SECRET_NAME__ }}
-        run: printf '%s' "$KEY_JSON" > "$RUNNER_TEMP/key.json"
+        run: |
+          test -n "$KEY_JSON" || { echo "::error::The __SECRET_NAME__ secret is missing or empty"; exit 1; }
+          printf '%s' "$KEY_JSON" > "$RUNNER_TEMP/key.json"
       - name: Deploy rules and indexes
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/key.json
-        run: npx --yes firebase-tools@latest deploy --only firestore --project __FIREBASE_PROJECT_ID__ --non-interactive
+        run: bunx firebase-tools@15 deploy --only firestore --project __FIREBASE_PROJECT_ID__ --non-interactive
