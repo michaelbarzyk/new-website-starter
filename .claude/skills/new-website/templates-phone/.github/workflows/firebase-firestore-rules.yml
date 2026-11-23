@@ -1,0 +1,24 @@
+# Phone/cloud mode only: deploys firestore.rules and indexes from CI, so nobody needs a local
+# Firebase login. Runs when those files change on main, or by hand (Actions tab → Run workflow).
+name: Deploy Firestore rules
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - firestore.rules
+      - firestore.indexes.json
+  workflow_dispatch:
+jobs:
+  deploy_rules:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Write service account key
+        env:
+          KEY_JSON: ${{ secrets.__SECRET_NAME__ }}
+        run: printf '%s' "$KEY_JSON" > "$RUNNER_TEMP/key.json"
+      - name: Deploy rules and indexes
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/key.json
+        run: npx --yes firebase-tools@latest deploy --only firestore --project __FIREBASE_PROJECT_ID__ --non-interactive

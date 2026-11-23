@@ -1,0 +1,39 @@
+rules_version = '2';
+
+// ===============================================================
+// Data model (keep this in sync as collections are added)
+// ===============================================================
+//
+// Collection: admins
+// Document ID: Firebase Auth uid. Existence of the doc grants admin.
+// Fields: role: string ("admin"), informational only; rules check existence.
+// Created by hand in the Firebase console only.
+//
+// Everything else is denied until a rule below opens it on purpose.
+// ===============================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated()
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    // A signed-in user can read only their own admins doc (to learn whether they are admin).
+    // Nobody can write admins from the app.
+    match /admins/{uid} {
+      allow get: if isAuthenticated() && request.auth.uid == uid;
+      allow list, create, update, delete: if false;
+    }
+
+    // Default deny for everything else.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

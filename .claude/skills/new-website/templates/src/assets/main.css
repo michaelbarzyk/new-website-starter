@@ -1,0 +1,8 @@
+@import 'tailwindcss';
+
+@theme {
+  /* Project palette: replace these when the design is chosen. */
+  --color-brand: #2563eb;
+  --color-ink: #0f172a;
+  --color-paper: #f8fafc;
+}
