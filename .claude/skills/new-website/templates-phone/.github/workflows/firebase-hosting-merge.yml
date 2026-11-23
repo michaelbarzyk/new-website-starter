@@ -1,0 +1,36 @@
+# Phone/cloud mode: nobody has a local Firebase login, so CI deploys the database rules AND the site.
+# Rules go first so the new site never goes live against old rules; if the key or its IAM roles are
+# wrong this fails here, before anything is published (see reference/phone-mode.md, step 7).
+name: Deploy to Firebase Hosting on merge
+on:
+  push:
+    branches:
+      - main
+permissions:
+  contents: read
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run lint
+      - run: bun run test
+      - run: bun run build
+      - name: Write service account key
+        env:
+          KEY_JSON: ${{ secrets.__SECRET_NAME__ }}
+        run: |
+          test -n "$KEY_JSON" || { echo "::error::The __SECRET_NAME__ secret is missing or empty"; exit 1; }
+          printf '%s' "$KEY_JSON" > "$RUNNER_TEMP/key.json"
+      - name: Deploy rules and indexes
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/key.json
+        run: bunx firebase-tools@15 deploy --only firestore --project __FIREBASE_PROJECT_ID__ --non-interactive
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.__SECRET_NAME__ }}
+          channelId: live
+          projectId: __FIREBASE_PROJECT_ID__

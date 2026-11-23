@@ -5,140 +5,90 @@ description: Bootstrap a brand-new website project end to end — Vue 3/TS/Vite/
 
 # new-website
 
-Turns "I want to start a new website" into a live, deployed, CI-wired project the user can
-immediately start vibe coding in. Do everything you can yourself; only hand the user the steps
-that genuinely need a human (browser consent, console toggles). Never ask for secrets or tokens.
+Turns "I want a website" into a live, deployed, CI-wired project the user can vibe code in. Do
+everything you can yourself; hand the user only the steps that need a human (console toggles,
+browser consent, one secret). Never ask for secrets or tokens in chat.
 
-Paths below are relative to this skill's directory (`~/.claude/skills/new-website/`).
-Call it `$SKILL`.
+`$SKILL` = this skill's directory (`.claude/skills/new-website/` in a starter repo, or
+`~/.claude/skills/new-website/`). Reference files live in `$SKILL/reference/`.
 
-## Audience
+## Audience and style
 
-Assume the user may be a **complete beginner** who has never coded. Use plain words (say "your
-website's address", not "deploy target"), give ONE step at a time, say exactly what to tap or
-click, and confirm each step worked before the next. Never paste walls of commands at them. If
-something fails, explain what happened in one sentence and what you'll do about it.
+Assume a **complete beginner on a phone**. Short messages, ONE step at a time, numbered choices
+("reply with a number"), plain words ("your web address", not "deploy target").
+
+Every console step follows the same shape (see `reference/phone-mode.md` for the exact scripts):
+1. say what to tap, giving BOTH old and new menu names where they differ;
+2. say what to TYPE before they reach any text box (names, ids, emails);
+3. say what success looks like, and end with "reply **done**";
+4. if something fails, say in one sentence what happened and what you'll do.
+Explain *why* in one line when they ask (anonymous sign-in? roles? the config?), and write the answer into
+`reference/feedback.md` if it was a surprise.
 
 ## Fixed defaults (don't re-ask)
 
 - Stack: Vue 3 + TS + Vite + Tailwind v4 + Pinia + Vitest, **Bun** only. Not React.
-- Firebase: Hosting + Firestore (locked-down rules, `admins` collection) + Auth (Google sign-in for admins).
-- GitHub: **private** repo, `main` (live) + `dev` (working) branches, PR previews, two-loop review (see the project's CLAUDE.md).
-- Location: `~/<project-name>` unless the user says otherwise.
+- Firebase: Hosting + Firestore (locked-down rules) + Auth (Google only; anonymous OFF).
+- Admin: the owner's verified Google email is in `ownerEmails()` in `firestore.rules`; their first
+  sign-in creates their own `admins/{uid}` doc. No console admin step.
+- GitHub: **private** repo; `main` (live) + `dev` (working); PR previews; two-loop review (see the
+  project's CLAUDE.md). Branches are `<type>/<issue#>-<description>` and **never** `claude/`.
+- The Firebase **project id is the free web address** (`<id>.web.app`) and can never change.
 
 ## Which mode?
 
-- Laptop/desktop session with a terminal where the user can run commands: steps below.
-- Phone or cloud session (no local browser, `firebase login` impossible): follow `reference/phone-mode.md`
-  instead of Steps 1, 2, 5 and 6 (scaffold with `--phone`; CI does the deploying; the user pastes one
-  service-account key into a GitHub secret and never into chat). Steps 3, 4's idea, 7 and 8 still apply.
+- Phone or cloud session (no local browser, no `firebase login`): **`reference/phone-mode.md`**. CI does all
+  deploys; the user pastes one service-account key into a GitHub secret, never into chat.
+- Laptop with a terminal: the "Laptop mode" section below.
 - Not sure? Ask: "Are you on a computer with a terminal, or just your phone?"
 
-## Step 0: discovery (guided, multiple choice)
+## The flow (both modes)
 
-Follow `reference/discovery.md`: five short rounds (what it is, a mood board of 8 looks, features,
-content, confirm). Use numbered or multiple-choice options, not open questions, and say the
-explainer from `reference/explainers.md` (#1) before any setup. Derive the project name (kebab-case
-from the site name) and title yourself and confirm them in Round 5. Firebase project ids are
-global; if the name is taken, retry with a short suffix, don't ask.
+1. **Discovery** (`reference/discovery.md`; first check for `.claude/site-brief.json` from the setup website and confirm it instead of re-asking): what it is, mood board, features, content, confirm.
+   Also collect: the site name, the **project id / web address** to create (kebab-case from the
+   name), and the **owner's Google email** (only if they want admin editing). Say explainer #1 and #2b
+   (`reference/explainers.md`) before any setup. If they answer several rounds at once, confirm in one line and skip ahead.
+2. **Firebase setup**, all in ONE batch before scaffolding, so nothing is redone: project, database,
+   sign-in, web app config, deploy key, IAM roles, GitHub secret. Phone: user does it, step by step.
+   Laptop: `scripts/firebase-setup.sh` does most of it.
+3. **Scaffold with the REAL config**: `scripts/scaffold.mjs ... --owner-email <email> [--phone]`
+   (`--in-place --dir .` inside a starter repo). Then `bun install`, `bun run format`, lint, test, build; all must pass.
+4. **First PR and preview**: open the PR, wait for CI, post the preview URL, user reacts in plain words.
+5. **Ship** only when the user says so. CI publishes the rules, then the site. Then have them sign in
+   on the live address and confirm the **Admin** link appears (explainer #4/#6).
+6. **Hand off**: summarise (live URL, repo, workflow in one line), ask what to build first, then start
+   on a `feature/<issue#>-...` branch per the project's CLAUDE.md.
 
-Phone style: short messages, one topic each, always say how to answer ("reply with a number").
+While the user is doing steps in the Firebase console, build the first draft in parallel; that is what
+keeps them from waiting.
 
-## Step 1: preflight
+## Laptop mode
 
-OS: macOS and Linux work directly. **Windows must use WSL** (Ubuntu): if `uname` fails or this is native Windows, stop and walk the user through `wsl --install` (see TUTORIAL.md, Part 0), then continue inside the WSL terminal, with the project under the WSL home directory (not `/mnt/c`).
+1. `bash $SKILL/scripts/preflight.sh` (Windows needs WSL). Fix MISSING installs yourself; logins are the
+   user's: `! firebase login`, `! gh auth login`, `! gh auth refresh -s repo,workflow`.
+2. `bash $SKILL/scripts/firebase-setup.sh <project-id> "<Title>" <web-config.json>` creates the project, web app and
+   database. On a new project Firestore often fails ("API has not been used"): have the user click Create
+   database (`reference/manual-steps.md`) and carry on.
+3. `node $SKILL/scripts/scaffold.mjs --dir ~/<name> --name <name> --title "<Title>" --project-id <id> --site-id <id> --secret FIREBASE_SERVICE_ACCOUNT_<ID_UPPER_UNDERSCORES> --config <web-config.json> --owner-email <email>`,
+   then `cd ~/<name> && bun install && bun run format && bun run lint && bun run test && bun run build`.
+4. `bash $SKILL/scripts/github-setup.sh <name> private` (commits, creates the private repo, pushes `main` and `dev`).
+5. CI key (last, give Google time): the user runs `cd ~/<name> && firebase init hosting:github` in a real terminal
+   (full `<owner>/<name>`; build script `bun install --frozen-lockfile && bun run build`; do NOT overwrite the PR
+   workflow; do NOT deploy on merge; no agent skills). Warn first: it usually errors once with
+   `404 ... service account ... does not exist`; just run it again. After: `gh secret list`, `git checkout firebase.json`,
+   `bash $SKILL/scripts/fix-workflows.sh <project-id>`.
+6. First deploy: `bunx firebase-tools@latest deploy --only firestore,hosting --project <id>`, then a small commit
+   on `dev`, a `dev` → `main` PR "chore: initial release", `gh pr checks --watch`, post the preview URL, merge on "ship it".
+   Rules are deployed from the user's own login here, so the extra IAM roles of phone mode are not needed.
 
-Run `bash $SKILL/scripts/preflight.sh`. For each MISSING line, fix it yourself if it is an install
-(the preflight prints the right command for the OS); otherwise tell the user the exact command. Logins are interactive: ask the
-user to run them in this session with the `!` prefix, e.g. `! firebase login`, `! gh auth login`,
-`! gh auth refresh -s repo,workflow`. Re-run preflight until clean.
+## One source for the steps
 
-## Step 2: Firebase project (autonomous)
+The Firebase/GitHub console steps live once, in `steps/steps.json` (shared with the website checklist at https://catchavibecode.web.app).
+`reference/phone-mode.md` and `TUTORIAL.md` render them between `<!-- steps:begin console -->` markers: edit the JSON, then run
+`node scripts/render-steps.mjs` (`--check` fails when a doc is stale; the test suite does this). `steps/fill.mjs` fills `{{projectId}}`-style
+placeholders and derives names (project id, secret name, links); `steps/brief.mjs` defines the site brief.
 
-```
-bash $SKILL/scripts/firebase-setup.sh <project-id> "<Title>" /tmp-or-scratchpad/web-config.json
-```
-Creates the project, a web app, the `(default)` Firestore database (nam5) and saves the web SDK config.
-If `projects:create` fails because of terms of service, send the user to https://console.firebase.google.com
-to accept once (or create the project there with the same id), then re-run (the script is idempotent).
-On a brand-new project the Firestore create usually fails with "API has not been used" (the CLI can't enable it, and retrying doesn't help). Expect this: tell the user to do the console click in `reference/manual-steps.md` ("Firestore") and carry on with the other steps meanwhile; deploy rules in Step 6 once it exists.
+## When things go wrong
 
-## Step 3: scaffold + verify (autonomous)
-
-```
-node $SKILL/scripts/scaffold.mjs --dir ~/<name> --name <name> --title "<Title>" \
-  --project-id <project-id> --site-id <project-id> \
-  --secret FIREBASE_SERVICE_ACCOUNT_<PROJECT_ID_UPPER_WITH_UNDERSCORES> --config <web-config.json>
-cd ~/<name> && bun install && bun run format && bun run lint && bun run test && bun run build
-```
-Everything must pass before continuing. Fix problems rather than skipping.
-(Site id defaults to the project id, so the URL is `https://<project-id>.web.app`.)
-
-## Step 4: GitHub (autonomous)
-
-Inside the project: `bash $SKILL/scripts/github-setup.sh <name> private`. This commits, creates the
-private repo, pushes `main` and `dev`. (Private repos on the free plan can't have branch protection;
-the workflow in CLAUDE.md is the guard instead. Don't try to enable it.)
-
-## Step 5: CI deploy key (one command for the user)
-
-`firebase init hosting:github` creates the Firebase service account and stores it as a GitHub secret.
-It needs browser consent and keyboard prompts, so the user must run it in a **real terminal** (the
-`!` prefix in chat does not pass prompts through reliably; in VS Code: Terminal > New Terminal):
-
-```
-cd ~/<name> && firebase init hosting:github
-```
-Give these answers up front, one line each:
-- GitHub repo: the FULL `<owner>/<name>` (name alone fails with "authorization cannot be used").
-- Run a build script before every deploy? **Yes**, `bun install --frozen-lockfile && bun run build`.
-- Overwrite PR workflow file? **No**. Deploy on merge? **No** (the template workflows already do it;
-  the secret is created before these prompts, so declining loses nothing).
-- Install Firebase agent skills? **No** (optional; can add later).
-- Optional: revoke the Firebase CLI GitHub OAuth app link it prints.
-
-Known flake (2 of 2 runs so far): the first attempt fails with `404 ... service account ... does not
-exist`, because Google needs a few seconds to propagate the new account before the key can be made.
-TELL THE USER BEFORE THEY RUN IT: "It will probably error once; that's normal. Just run it again."
-The failed attempt leaves a harmless unused service account. Do this step last, after the slower
-steps, to give Google time.
-
-After: confirm `gh secret list` shows `FIREBASE_SERVICE_ACCOUNT_<ID>`, `git checkout firebase.json`
-(the command only reformats it), and run `bash $SKILL/scripts/fix-workflows.sh <project-id>`.
-If it can't be made to work, see `reference/manual-steps.md` ("CI key").
-
-## Step 6: first deploy (autonomous)
-
-```
-cd ~/<name>
-bunx firebase-tools@latest deploy --only firestore,hosting --project <project-id>
-```
-(Builds `dist/` first with `bun run build`.) `dev` and `main` start identical, so first add a small commit on `dev` (e.g. tick the ROADMAP). Then open a PR `dev` → `main` titled
-"chore: initial release", wait for the preview check (`gh pr checks --watch`), post the preview URL,
-and tell the user the live URL. Merge to `main` only when they say ship (per CLAUDE.md), or, for
-this very first release, offer it, since nothing is live yet and `main` should deploy once to prove CI.
-
-## Step 7: console steps for the user
-
-Walk through `reference/manual-steps.md` ("Auth" and "First admin"): enable Google sign-in, sign
-in once on the live site, create the `admins/{uid}` doc. Explain each click; offer to wait.
-These can't be automated without a service-account key.
-
-## Step 8: first draft, admin, hand off
-
-Build the first draft per `reference/discovery.md` ("First draft") BEFORE the console steps if the
-user is waiting on the preview; use explainers #3, #4 and #6 at their moments.
-
-- Write a project memory note if useful (project purpose, live URL, repo).
-- Summarize: live URL, repo URL, branch workflow in one line, what's left (design, features).
-- Ask what to build first and start vibe coding on a `feature/` branch off `dev`, following the
-  project's CLAUDE.md (PR early, post the preview URL).
-
-## Troubleshooting
-
-- CI fails at `bun install --frozen-lockfile`: lockfile stale; run `bun install` and commit `bun.lock`.
-- `firebase deploy` 403 / "Cloud Firestore API has not been used": enable it in the console or wait
-  a minute after project creation, retry.
-- Preview comment missing on PRs from forks: expected (workflow only runs for same-repo PRs).
-- Popup sign-in blocked on `localhost`: it is allowed by default; for custom domains add them under
-  Auth → Settings → Authorized domains.
+`reference/troubleshooting.md` has every error we have met, with the fix. Log new surprises in
+`reference/feedback.md` (what happened, the fix, whether the skill was updated).

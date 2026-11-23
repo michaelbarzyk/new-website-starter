@@ -5,7 +5,7 @@ import { getFirestore } from 'firebase/firestore'
 // Firebase web config is public by design; access is controlled by firestore.rules.
 const firebaseConfig = __FIREBASE_CONFIG__
 
-/** admins/{uid}: an existing doc grants admin. Created by hand in the console only. */
+/** admins/{uid}: an existing doc grants admin. Owners listed in firestore.rules claim theirs on first sign-in. */
 export const ADMINS_COLLECTION = 'admins'
 
 export const firebaseApp = initializeApp(firebaseConfig)

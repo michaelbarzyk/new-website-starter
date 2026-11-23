@@ -14,6 +14,11 @@ about 20 minutes and you'll do a few taps in two websites; I'll tell you exactly
 hosts the site, its database and sign-in, free at this size. You make the project once; after
 that I handle everything."
 
+## 2b. Before they name the Firebase project ("your web address")
+"Whatever ID Firebase gives your project becomes your free web address, like `vibesew.web.app`, and it can
+never be changed. So check the ID under the name before you tap Create. Later you can add a nicer address
+or your own domain (about $12 a year)."
+
 ## 3. After the first preview ("how editing works")
 "That link is a preview, only for you. To change anything, just tell me in plain words ('make the
 heading bigger', 'add a menu page', 'use a warmer colour'). I'll update the preview in a minute.
@@ -21,8 +26,8 @@ Nothing is live until you say 'ship it', so you can't break your real site while
 
 ## 4. Before admin setup ("what admin means")
 "Right now anyone can look at your site, but only you should be able to change things from inside
-it. Admin is you proving who you are with Google sign-in, then being added to a short 'allowed to
-edit' list. It's two taps in Firebase."
+it. Admin is you proving who you are with Google sign-in. Your email is on a short 'owners' list in the site's
+rules, so the first time you sign in, the site adds you as admin. No extra setup."
 
 ## 5. When they ask about tech / "what is it built with"
 Short answer first: "Your site is built with Vue (the building blocks), Tailwind (styling) and

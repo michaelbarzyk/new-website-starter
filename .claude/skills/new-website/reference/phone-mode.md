@@ -1,51 +1,135 @@
 # Phone / cloud mode
 
-For users with no laptop tooling: Claude runs in a cloud session (Claude app or claude.ai/code) with
-no browser and no interactive prompts. Design: **Claude never holds Firebase credentials.** The user
-creates the Firebase project in the console, pastes one service-account key into a GitHub secret,
-and GitHub Actions does every deploy. Claude only needs the public web config.
-
-## Order for a beginner
-1. Discovery (`discovery.md`) and the explainers. 2. Create Firebase project + secret (below).
-3. Scaffold with their mood palette, build the first draft, open the PR, share the preview.
-4. Admin setup. Never make them wait through setup before they see anything: if you can,
-scaffold and open the PR FIRST (the preview needs the secret, so ask for the secret right after the
-first draft is pushed).
+For a user with no laptop tooling. Claude runs in a cloud session (Claude app, Code tab) with no
+browser and no interactive prompts. Design: **Claude never holds Firebase credentials.** The user
+creates the Firebase project in the console, pastes one service-account key into a GitHub secret, and
+GitHub Actions does every deploy. Claude needs only the public web config.
 
 ## Starting point
 
-The user created their repo from the `new-website-starter` template and opened it in the Claude app
-(Code tab). The skill is at `.claude/skills/new-website/` in that repo (`$SKILL`). Cloud sessions
-cannot create repos, so the repo (private, named by the user) already exists. Project name = repo
-name. Scaffold into the repo itself: `--in-place --dir .` (keep `.claude/`). Work on a branch
-(cloud sessions push `claude/...` branches), then create `dev` from `main` after the first commit
-lands on `main` via PR.
+The user made their repo from the **`michaelbarzyk/new-website-starter` template** (a generated copy of this skill plus a starter `CLAUDE.md`, built from
+`michaelbarzyk/catch-a-vibecode` with `scripts/build-starter.sh`; never edited by hand) and opened it in the Claude app. This skill is at
+`.claude/skills/new-website/` in that repo (`$SKILL`). Cloud sessions cannot create repos,
+so the (private) repo already exists; project name = repo name. Scaffold into it with
+`--in-place --dir .` (the script skips `.claude/`). Cloud sessions force a working branch name (e.g.
+`claude/...`); that is the environment, not our convention (see SKILL.md for ours).
 
-## What the user does on their phone (browser), in order
-1. https://console.firebase.google.com → **Add project** → name it (this is the project id; note it).
-   Skip Google Analytics. Accept terms if asked.
-2. Build → **Firestore Database** → Create database → Standard → `nam5` → Production mode.
-3. Build → **Authentication** → Get started → Sign-in method → Google → Enable → Save.
-4. Project settings (gear) → **Your apps** → web icon `</>` → nickname → Register app. Copy the
-   `firebaseConfig` values (apiKey, authDomain, projectId, storageBucket, messagingSenderId, appId)
-   and paste them to Claude. These are public by design; fine to paste in chat.
-5. Project settings → **Service accounts** → **Generate new private key** → a JSON file downloads.
-   Open it, copy ALL the text. **Never paste this into the chat.**
-6. GitHub (github.com in the browser, "Desktop site" if the mobile view hides it) → the new repo →
-   Settings → Secrets and variables → Actions → **New repository secret**:
-   name `FIREBASE_SERVICE_ACCOUNT_<PROJECT_ID_UPPER_WITH_UNDERSCORES>`, value = the JSON text. Then delete the downloaded file.
+## Order (do not reorder; this is what removed rework in test run 1)
 
-## What Claude does
-1. Writes the web config to a file and scaffolds with `--phone`:
-   `node $SKILL/scripts/scaffold.mjs ... --phone` (adds `firebase-firestore-rules.yml`).
-2. Creates/pushes the repo (GitHub connector or the session's git remote; if repo creation isn't
-   possible, ask the user to create an empty private repo `<name>` in GitHub and give the URL).
-3. After the secret exists: opens the `dev` → `main` PR; preview deploys run in CI.
-4. After merge: the live deploy runs in CI. Rules deploy via the "Deploy Firestore rules" workflow
-   (runs on push to main when rules change; for the very first deploy ask the user to open
-   Actions → Deploy Firestore rules → Run workflow).
-5. Console: first admin (same as laptop mode, Part 5 of TUTORIAL.md).
+1. Discovery + explainers (`discovery.md`, `explainers.md` #1, #2, #2b).
+2. **Console pass**, steps 1-7 below, one at a time. Scaffold as soon as you have the web config
+   (after step 4) and build the first draft while the user does steps 5-7.
+3. Open the first PR into `main`, post the preview, user reacts. (There is no `dev` yet; create it from
+   `main` after the first merge.) Subscribe to the PR so CI results reach you.
+4. "Ship it" → merge (merge commit). CI deploys rules, then the site. Check both runs.
+5. Owner signs in on the live address → Admin link appears. Done.
+
+## Console pass: what to say, step by step
+
+Always end with: "Reply **done** when …". Never batch two steps in one message. The steps below are generated from `steps/steps.json`
+(the single source shared with the website checklist; edit that file, then run `node scripts/render-steps.mjs`).
+
+<!-- steps:begin console -->
+**1. Create the Firebase project**
+*Firebase hosts your site, database and sign-in, free at this size.*
+
+- Open the Firebase console and tap **Add project**.
+- Name it **<site name>**. Under the name there is an editable **Project ID**: tap the pencil and set it to **<project-id>**. It becomes your free address `https://<project-id>.web.app` and can **never be changed**.
+- Turn **Gemini in Firebase OFF** and **Google Analytics OFF**. Accept the terms. If it offers billing or an upgrade, skip it; the free plan is enough.
+- Link: [Firebase console](https://console.firebase.google.com)
+- Value: Project ID = `<project-id>`
+- ✅ Worked when: You see the new project's overview page, and Project settings shows the Project ID <project-id>.
+- ⚠️ That Project ID is taken → Add a short suffix (like `<project-id>-1`) and tell Claude the new id; the address changes with it.
+- ⚠️ The id has random letters added → Tap the pencil and edit it before you tap Create; it can't be changed later.
+
+**2. Create the database**
+
+- Open the menu **Databases & Storage → Firestore** (older console: Build → Firestore Database) and tap **Create database**.
+- Choose **Standard**, location **nam5 (United States)**, and **Production mode**. Tap **Create**.
+- Link: [Firestore page](https://console.firebase.google.com/project/<project-id>/firestore)
+- ✅ Worked when: You see an empty Firestore with a **Data** tab.
+
+**3. Turn on Google sign-in**
+*Visitors sign in with Google so you know who sent each message and can reply. Browsing stays public.*
+
+- Open the menu **Security → Authentication** (older console: Build → Authentication) and tap **Get started**.
+- Open **Sign-in method**, tap **Google**, and switch **Enable** on.
+- For the **public-facing name**, type **<site name>** (any name works; it shows on the Google sign-in popup). For the **support email**, pick your own email. Tap **Save**.
+- Leave **Anonymous** OFF.
+- Link: [Authentication page](https://console.firebase.google.com/project/<project-id>/authentication/providers)
+- ✅ Worked when: Google shows as **Enabled** in the Sign-in method list.
+
+**4. Register the web app and copy its settings**
+*These six values are your site's address-book entry for Firebase.*
+
+- On **Project overview**, tap **Add app** (under the project name) and choose the web icon `</>`.
+- Nickname: **<site name>**. Leave **Firebase Hosting unchecked**. Tap **Register app**.
+- It asks **npm or script tag**: choose **npm**. Ignore the install commands.
+- Copy the six values from `firebaseConfig` (apiKey, authDomain, projectId, storageBucket, messagingSenderId, appId) and paste them into Claude. They are public by design, so this is safe to share.
+- ✅ Worked when: You've sent all six values to Claude.
+
+**5. Make the deploy key (the only sensitive step)**
+*This key lets GitHub publish your site and rules for you.*
+
+- Open **Project settings** (gear) → **Service accounts** and tap **Generate new private key**, then **Generate key**. A `.json` file downloads to your phone.
+- Ignore the 'Admin SDK configuration snippet' above the button; it's only example code.
+- Copy ALL the text in the file: open your browser's downloads list and tap the file, or use the Files app (iPhone: preview it, or Share → Save to Notes, then copy).
+- **Never paste this key into the Claude chat or any website.** It goes only into a GitHub secret in the next steps.
+- Link: [Service accounts page](https://console.firebase.google.com/project/<project-id>/settings/serviceaccounts/adminsdk)
+- ✅ Worked when: You have the file's text copied and ready to paste in the GitHub step.
+- ⚠️ Can't open or copy the file → Try the other route (browser downloads list vs Files app), or do this step on a computer.
+
+**6. Give the key two permissions**
+*The key starts with few permissions. These two let it check that the database is on and publish your rules.*
+
+- Open the Google Cloud IAM page (link below) and sign in with the same Google account. Accept any welcome screen.
+- Tap the pencil on the row **firebase-adminsdk-…**, then **Add another role** and add **Service Usage Consumer**.
+- Tap **Add another role** again and add **Firebase Rules Admin** (type `rules` in the role box; if it's missing, **Firebase Admin** also works but is broader). Tap **Save**.
+- Keep its existing roles. Leave the **Owner (Legacy)** row (that's you) alone. Don't add any Cloud Datastore roles.
+- Wait 1 to 2 minutes: Google applies these slowly.
+- Link: [Google Cloud IAM page](https://console.cloud.google.com/iam-admin/iam?project=<project-id>)
+- ✅ Worked when: The firebase-adminsdk row lists both new roles alongside its existing ones.
+- ⚠️ Deploy fails with `Permission denied to get service firestore.googleapis.com` → Service Usage Consumer is missing.
+- ⚠️ Deploy fails with `firebaserules.googleapis.com ... :test` → Firebase Rules Admin is missing.
+- ⚠️ It still fails right after you added the role → Wait 2 minutes and re-run the failed job.
+
+**7. Save the key as a GitHub secret**
+*Only GitHub's CI can use the secret; it's hidden once saved.*
+
+- Open your repo on github.com (use 'Desktop site' if the phone view hides Settings) → **Settings → Secrets and variables → Actions → New repository secret**.
+- Name: exactly **<SECRET_NAME>**. Value: paste the whole key text. Tap **Add secret**.
+- Delete the downloaded file from your phone.
+- Link: [New secret page](https://github.com/<github-username>/<repo-name>/settings/secrets/actions/new)
+- Value: Secret name = `<SECRET_NAME>`
+- ✅ Worked when: The secret <SECRET_NAME> shows in the repo's Actions secrets list.
+- ⚠️ The deploy later says the secret is missing or empty → The name must match exactly and the value must be the whole JSON text.
+<!-- steps:end console -->
+
+### Notes for Claude on those steps (not for the user)
+
+- **Project id:** after step 1, ask for the Project ID (gear → Project settings) and confirm it matches what you will put in the scaffold.
+- **Web config:** say what it is in one line: "your site's address-book entry for Firebase. Public by design; safe to paste here."
+- **Deploy key:** if asked "can you add it for me?": no. My tools cannot create GitHub secrets, and the key must not pass through chat. The phone copy
+  routes are untested across phones, so ask which phone and offer fallbacks (a computer is the last resort).
+- **IAM:** if a deploy still fails after the roles are added and 2 minutes have passed, ask for a screenshot of the firebase-adminsdk row. The page
+  is `https://console.cloud.google.com/iam-admin/iam?project=<project-id>`.
+- **Anonymous sign-in:** explain only if asked: browsing is public already; messages need Google sign-in so the owner can reply.
+
+## What Claude does around those steps
+
+- After step 4: write the config to a scratch file and scaffold (`--phone` adds the phone workflows: the merge workflow deploys
+  **rules first, then hosting**, so a bad key fails before anything publishes; plus a manual "Deploy Firestore rules" workflow):
+  `node $SKILL/scripts/scaffold.mjs --in-place --dir . --name <repo> --title "<Title>" --project-id <id> --site-id <id> --secret FIREBASE_SERVICE_ACCOUNT_<ID> --config <cfg.json> --owner-email <email> --phone`
+  Then install, format, lint, test, build. All must pass. Commit with a body; push the session branch.
+- When the secret exists: open the PR into `main`, subscribe to it, post the preview URL when CI comments it. Previews can't test Google
+  sign-in (preview addresses aren't authorized domains) and don't have the new rules yet: say so.
+- On "ship it": merge (merge commit). Check the "Deploy to Firebase Hosting on merge" run. If rules fail with 403, see `troubleshooting.md`
+  (re-run once after IAM propagates; Actions → run → Re-run failed jobs, or `rerun_failed_jobs`).
+- The PR closing ends your subscription, so tell the user to say **check** and poll the run yourself.
+- After merge: create `dev` from `main` (`git push origin main:dev`) for future work.
 
 ## Never
-- Ask for, print, or store the service-account JSON anywhere but the GitHub secret.
-- Use `firebase login` / `firebase init hosting:github` in this mode.
+
+- Ask for, print or store the service-account JSON anywhere but the GitHub secret.
+- Use `firebase login` or `firebase init hosting:github` in this mode.
+- Put someone else's email in `ownerEmails()`; it is the user's own verified Google email, lower-case.
