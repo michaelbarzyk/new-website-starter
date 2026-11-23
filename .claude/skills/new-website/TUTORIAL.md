@@ -29,7 +29,7 @@ the closest match. Take it one step at a time, and tell Claude when you're stuck
 
 You'll bounce between two places: your phone's **web browser** (Safari or Chrome) and the **Claude app**.
 
-### Step 1: What do you already have?
+### Step 1: Let’s check your accounts
 
 Check each line. Then do **only** the sections below for the things you answered "no" to, in
 the order they appear, and skip the rest.
