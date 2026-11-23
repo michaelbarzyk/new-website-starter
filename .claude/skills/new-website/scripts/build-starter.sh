@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# The starter is a GENERATED copy; catch-a-vibecode is a website, so it is not itself a template. Re-run after every merge to its main.
+# The starter is a GENERATED copy; catch-a-vibecode is a website, so it is not itself a template. It is normally kept current by
+# copying the skill folder onto a branch and opening a pull request (see docs/starter-sync.md in catch-a-vibecode); this script is the old way.
 # Source of truth for the skill is michaelbarzyk/catch-a-vibecode (.claude/skills/new-website). Run this from a checkout of it.
 # Builds the beginner "starter" template repo: this skill packaged at .claude/skills/new-website
 # plus a CLAUDE.md that tells a phone/cloud Claude session what to do. Publishes it as a GitHub

@@ -117,7 +117,9 @@ Always end with: "Reply **done** when …". Never batch two steps in one message
 
 ## What Claude does around those steps
 
-- After step 4: write the config to a scratch file and scaffold (`--phone` adds the phone workflows: the merge workflow deploys
+- After step 4: save the config EXACTLY as the user pasted it (the JavaScript object is fine; no conversion needed) to a scratch file and scaffold. The script checks
+  everything first (the six Firebase values, that `projectId` matches `--project-id`, names, secret name, owner email) and, if anything is wrong, prints what and
+  changes NOTHING, so fix the input and run it again (`--phone` adds the phone workflows: the merge workflow deploys
   **rules first, then hosting**, so a bad key fails before anything publishes; plus a manual "Deploy Firestore rules" workflow):
   `node $SKILL/scripts/scaffold.mjs --in-place --dir . --name <repo> --title "<Title>" --project-id <id> --site-id <id> --secret FIREBASE_SERVICE_ACCOUNT_<ID> --config <cfg.json> --owner-email <email> --phone`
   Then install, format, lint, test, build. All must pass. Commit with a body; push the session branch.

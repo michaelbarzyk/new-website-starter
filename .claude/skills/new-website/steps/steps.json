@@ -110,12 +110,12 @@
       ],
       "title": "Create a Google account",
       "account": "google",
-      "why": "Used for Firebase, where your site lives, and for signing in to it later.",
+      "why": "Used for Firebase and for signing in.",
       "do": [
         "Open the Google sign-up page.",
-        "Fill in your name, pick a username and a password, and finish the verification screens."
+        "Enter your name, a username and a password, then finish verification."
       ],
-      "success": "You see a Google page showing your name or initial in the top corner.",
+      "success": "your name or initial in the top corner.",
       "links": [
         {
           "label": "Open sign-up",
@@ -128,25 +128,27 @@
       },
       "explainer": {
         "title": "Why a Google account?",
-        "intro": "Firebase, where your site will live, is Google's, so you sign in to it with a Google account. Visitors will also be able to sign in to your site with Google, and the account you use here becomes your site's **owner**. Any Gmail address works.",
+        "intro": "Firebase, where your site will live, belongs to Google, so you sign in to it with a Google account. Visitors can sign in to your site with Google too, and the account you use here becomes the site's **owner** (its admin). Any Gmail address works.",
         "sections": [
           {
             "heading": "Good to know",
             "points": [
               "It's free, and you only need one.",
-              "Use the **same email** for Google, GitHub and Claude if you can. It avoids confusion later.",
-              "Turn on two-step verification: this account will control your website."
+              "Use the **same email** for Google, GitHub and Claude, so you never wonder which is which.",
+              "Turn on two-step verification: this account controls your website."
             ]
           }
         ],
         "terms": [
           {
             "term": "Owner",
-            "meaning": "The Google account whose email you give us. The first time it signs in to your site, it automatically becomes the site's admin."
+            "meaning": "The Google account whose email you enter next. The first time it signs in to your site, it becomes the site's admin, so only you can edit it.",
+            "icon": "person"
           },
           {
             "term": "Gmail",
-            "meaning": "Any @gmail.com address counts as a Google account."
+            "meaning": "Any @gmail.com address counts as a Google account.",
+            "icon": "envelope"
           }
         ]
       }
@@ -161,18 +163,18 @@
       ],
       "title": "Create a GitHub account",
       "account": "github",
-      "why": "GitHub keeps your website's files and their full history safe.",
+      "why": "GitHub keeps your site's files and their history.",
       "do": [
         "Open the GitHub sign-up page.",
         "Enter your email, a password and a username.",
-        "Solve the puzzle, then type the verification code GitHub emails you.",
-        "If GitHub asks you to personalise things, skip it."
+        "Solve the puzzle and type the code GitHub emails you.",
+        "Skip any “personalize” questions."
       ],
-      "success": "You see your GitHub home page.",
+      "success": "your GitHub home page.",
       "trouble": [
         {
           "symptom": "No code arrived",
-          "fix": "Check your spam folder, then tap 'resend'."
+          "fix": "Check spam, then tap “resend”."
         }
       ],
       "links": [
@@ -187,23 +189,25 @@
       },
       "explainer": {
         "title": "What is GitHub?",
-        "intro": "GitHub is a website that stores your website's files and remembers **every change ever made** to them, like version history in Google Docs, but for a whole website. Claude reads and changes your files there, and GitHub also builds and publishes your site for you.",
+        "intro": "GitHub is a website that keeps your site's files in one place, called a **repository**, and remembers every change ever made to them, like version history for a whole website. Claude edits those files there, and GitHub builds and publishes your site.",
+        "diagram": "github-branches",
         "sections": [
           {
             "heading": "How a change travels",
             "points": [
-              "You tell Claude what you want, in plain words.",
-              "Claude makes the change on a **branch** and **pushes** it to your repo.",
-              "Claude opens a **pull request**, and GitHub builds a private **preview** link.",
-              "You look at the preview on your phone and say what to tweak.",
-              "When you're happy you say **ship it**: your changes are **merged** into `main`, and your live site updates in about a minute."
+              "You tell Claude what you want, in plain words, like “make the title bigger”.",
+              "Claude makes the change on a **branch**: a separate copy of your repository, so your live site is untouched while it works. Then it **pushes** (uploads) the branch to GitHub, so the change is saved there.",
+              "Claude opens a **pull request**: a request on GitHub that says “please add this change to the live site”. It shows exactly what changed.",
+              "As soon as the pull request exists, GitHub automatically builds a private **preview**: a temporary copy of your site with the change in it, at a link only you have.",
+              "You open the preview on your phone. Want something different? Tell Claude, and it updates the same pull request and preview.",
+              "Happy? Say **ship it**. Claude **merges** the pull request, which adds the change to `main`, the branch your live site comes from. Your site updates within a minute."
             ]
           },
           {
             "heading": "Good to know",
             "points": [
-              "Your repo is **private**: only you can see your files. Your website itself is public.",
-              "Everything is saved, so a mistake can always be undone.",
+              "Your repository is **private**: only you can see the files. The website itself is public.",
+              "Every change is saved, so a mistake can always be undone.",
               "It's free for what we're doing."
             ]
           }
@@ -211,39 +215,48 @@
         "terms": [
           {
             "term": "Repository (repo)",
-            "meaning": "Your website's folder on GitHub. One repo is one website."
+            "meaning": "Your website's folder on GitHub. It holds every file of your site; one repo is one website.",
+            "icon": "folder"
           },
           {
             "term": "Commit",
-            "meaning": "A saved checkpoint with a short note about what changed. You can always go back to one."
+            "meaning": "A saved checkpoint with a short note, like “made the title bigger”. You can go back to any commit.",
+            "icon": "commit"
           },
           {
             "term": "Branch",
-            "meaning": "A separate copy of your site where changes are tried out safely. `main` is your live site; `dev` is where work happens first."
+            "meaning": "A separate copy of your repo for trying changes without touching the live site. `main` is the branch your live site comes from; `dev` is where new work starts.",
+            "icon": "branch"
           },
           {
             "term": "Push",
-            "meaning": "Send changes up to GitHub."
+            "meaning": "Send changes from where Claude works up to your repo on GitHub, so they're saved there.",
+            "icon": "push"
           },
           {
             "term": "Pull",
-            "meaning": "Bring the latest changes down from GitHub to where you're working."
+            "meaning": "Bring the latest changes down from GitHub to where you're working.",
+            "icon": "pull"
           },
           {
             "term": "Pull request (PR)",
-            "meaning": "A request that says 'please add my changes.' GitHub shows what changed and builds a preview link."
+            "meaning": "A request on GitHub to add one branch's changes to another, usually `main`. It shows what changed and gets its own preview link.",
+            "icon": "pullrequest"
           },
           {
             "term": "Preview",
-            "meaning": "A private link to see your changes before anyone else can."
+            "meaning": "A private, temporary copy of your site with the change in it. GitHub builds one for every pull request.",
+            "icon": "eye"
           },
           {
             "term": "Merge",
-            "meaning": "Combine the changes from one branch into another once they look good."
+            "meaning": "Add the changes from one branch into another. Merging a pull request into `main` puts the change on your live site.",
+            "icon": "merge"
           },
           {
             "term": "Ship",
-            "meaning": "Merge your changes into `main` so the live site updates. 'Ship it' is what you tell Claude."
+            "meaning": "Our word for merging into `main` so the change goes live. You just say “ship it”.",
+            "icon": "flag"
           }
         ]
       }
@@ -258,13 +271,13 @@
       ],
       "title": "Get a paid Claude plan",
       "account": "claude",
-      "why": "Claude Code is not on the free plan, so you need Pro or higher.",
+      "why": "Claude Code isn't on the free plan.",
       "do": [
-        "Install the Claude app, or open claude.ai, and sign up.",
-        "Already on the free plan? Open your profile and tap **Upgrade**.",
-        "Choose **Pro** (or higher) and enter payment details."
+        "Install the Claude app or open claude.ai, and sign up.",
+        "On the free plan? Open your profile and tap **Upgrade**.",
+        "Choose **Pro** or higher and add payment details."
       ],
-      "success": "You see a **Code** tab in the app.",
+      "success": "a **Code** tab in the app.",
       "trouble": [
         {
           "symptom": "No Code tab",
@@ -283,33 +296,44 @@
       },
       "explainer": {
         "title": "What is Claude Code?",
-        "intro": "Claude is the AI that builds your website with you. **Claude Code** is the part that can work on your files in GitHub. You describe what you want in plain words, and it writes and changes the site for you. It comes with a paid plan (Pro or higher).",
+        "intro": "Claude is the AI that builds your site with you. **Claude Code** is the part that works on your files in GitHub: you describe what you want in plain words, and it makes the change. It comes with a paid plan (Pro or higher).",
         "sections": [
           {
             "heading": "Who does what",
             "points": [
-              "**Claude** writes the code, saves changes, opens pull requests and builds previews.",
-              "**You** decide what you want, look at previews, say **ship it**, and do the few steps that need your own accounts, like switching things on in Firebase.",
-              "Claude never needs your passwords or keys. If anything asks you to paste a secret key into the chat, don't."
+              "**Claude** writes the code, saves the changes, opens pull requests and builds previews.",
+              "**You** decide what you want, look at previews, say **ship it**, and do the few steps that need your own accounts.",
+              "Claude never needs your passwords or keys. Don't paste secrets into the chat."
+            ]
+          },
+          {
+            "heading": "Good to know",
+            "points": [
+              "This is the only paid part. Claude Code needs a Pro, Max or Team plan; see claude.ai for current prices.",
+              "Next you'll connect Claude to your GitHub account, so it can work on your repository."
             ]
           }
         ],
         "terms": [
           {
             "term": "Code tab",
-            "meaning": "Where Claude works on your repo inside the Claude app."
+            "meaning": "Where Claude works on your repo, inside the Claude app.",
+            "icon": "terminal"
           },
           {
             "term": "Skill",
-            "meaning": "A set of instructions Claude follows. The new-website skill walks you through building a site one step at a time."
+            "meaning": "A set of instructions Claude follows. The new-website skill guides you through building a site, one step at a time.",
+            "icon": "checklist"
           },
           {
             "term": "Plan",
-            "meaning": "Pro, Max or a Team seat. Claude Code isn't on the free plan."
+            "meaning": "Pro, Max or a Team seat. Claude Code isn't on the free plan.",
+            "icon": "ticket"
           },
           {
             "term": "Prompt",
-            "meaning": "Just a message to Claude. Plain words are fine, like 'make the heading bigger'."
+            "meaning": "Any message you send Claude. Plain words work, like “make the heading bigger”.",
+            "icon": "bubble"
           }
         ]
       }
@@ -324,12 +348,12 @@
       ],
       "title": "Accept Firebase's terms",
       "account": "firebase",
-      "why": "One tap now saves you a confusing error later.",
+      "why": "Accepting now avoids a confusing error later.",
       "do": [
         "Signed in to Google, open the Firebase console.",
-        "If a terms screen appears, accept it. Do not create a project yet."
+        "If a terms screen appears, accept it. Don't create a project yet."
       ],
-      "success": "You see 'Create a project' or 'Add project'. That is enough; close it.",
+      "success": "“Add project”. That's enough; close it.",
       "links": [
         {
           "label": "Open Firebase",
@@ -342,46 +366,65 @@
       },
       "explainer": {
         "title": "What is Firebase?",
-        "intro": "Firebase is Google's free toolbox for websites. It puts your site on the internet at a real web address, stores your data, and lets visitors sign in with Google. You'll create one Firebase **project** for each website.",
+        "intro": "Firebase is Google's free toolbox for websites. It puts your site online at its own web address, stores data, and handles sign-in. Each website you make is one Firebase **project**.",
+        "callout": {
+          "label": "Your web address",
+          "code": "https://<project-id>.web.app",
+          "note": "When you create a project you choose its **project ID**. That ID becomes your website's address, like `bakery-demo.web.app`. It can never be changed, so choose carefully."
+        },
+        "diagram": "firebase-parts",
         "sections": [
           {
-            "heading": "What you'll do with it later",
+            "heading": "What you'll do with it",
             "points": [
-              "Create a project and pick its address.",
-              "Switch on the database and Google sign-in.",
-              "Make a key that lets GitHub publish your site for you. This key is the one secret in the whole process: it goes only into a GitHub secret, never into a chat.",
-              "Accepting Firebase's terms now, once, avoids a confusing error later."
+              "Create a project and pick its **project ID**, which becomes your address: `<project-id>.web.app`.",
+              "Turn on the **database** (Firestore) and **Google sign-in**, so your site can save things and let visitors sign in.",
+              "Make a **key** (a private file) that lets GitHub publish your site to Firebase for you. It goes only into a GitHub secret, never into a chat."
+            ]
+          },
+          {
+            "heading": "Good to know",
+            "points": [
+              "The free **Spark plan** is enough for a site like this. No credit card is needed.",
+              "Firebase is part of Google, so you sign in with your Google account."
             ]
           }
         ],
         "terms": [
           {
             "term": "Project",
-            "meaning": "Your website's home inside Firebase. Its **project ID** becomes your web address (like `yourname.web.app`) and can never be changed."
+            "meaning": "Your website's home inside Firebase. Its **project ID** becomes your address, `<project-id>.web.app`, and can't be changed.",
+            "icon": "box"
           },
           {
             "term": "Hosting",
-            "meaning": "Puts your site on the internet at that address."
+            "meaning": "Puts your site online at that address.",
+            "icon": "globe"
           },
           {
             "term": "Firestore",
-            "meaning": "A database: where your site keeps things like messages or photos' details."
+            "meaning": "A database: where your site stores things like messages.",
+            "icon": "database"
           },
           {
             "term": "Authentication",
-            "meaning": "Lets visitors sign in, for example with Google."
+            "meaning": "Lets visitors sign in, for example with Google.",
+            "icon": "key"
           },
           {
             "term": "Security rules",
-            "meaning": "Rules that decide who can read or write your data. They're locked down by default."
+            "meaning": "Rules about who can read or write your data. They start locked down.",
+            "icon": "shield"
           },
           {
             "term": "Console",
-            "meaning": "The Firebase website where you create the project and flip the switches."
+            "meaning": "The Firebase website where you create the project and flip these switches.",
+            "icon": "dashboard"
           },
           {
             "term": "Spark plan",
-            "meaning": "Firebase's free plan. It covers a hobby site, and no credit card is needed."
+            "meaning": "Firebase's free plan: enough for a hobby site, no credit card.",
+            "icon": "tag"
           }
         ]
       }

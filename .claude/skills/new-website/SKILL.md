@@ -88,6 +88,12 @@ The Firebase/GitHub console steps live once, in `steps/steps.json` (shared with 
 `node scripts/render-steps.mjs` (`--check` fails when a doc is stale; the test suite does this). `steps/fill.mjs` fills `{{projectId}}`-style
 placeholders and derives names (project id, secret name, links); `steps/brief.mjs` defines the site brief.
 
+## Keeping the starter in step
+
+`michaelbarzyk/new-website-starter` (what beginners copy) is a generated copy of this folder, updated by hand-off: whenever a change to this folder lands on
+`main` of `michaelbarzyk/catch-a-vibecode`, Claude opens a pull request into the starter that replaces its `.claude/skills/new-website/` folder
+(its own `CLAUDE.md` and `README.md` are left alone). The steps are in `docs/starter-sync.md` of that repo. Never edit the starter by hand.
+
 ## When things go wrong
 
 `reference/troubleshooting.md` has every error we have met, with the fix. Log new surprises in
