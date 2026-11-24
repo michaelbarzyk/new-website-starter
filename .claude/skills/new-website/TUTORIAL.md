@@ -70,9 +70,9 @@ Claude Code isn't on the free plan, so you need one of these.
 
 This lets Claude see and change your website's files. You'll do it from the Claude app.
 
-1. Open the **Claude** app and tap the **Code** tab.
-2. Tap **Connect GitHub** (or "Sign in with GitHub" / "Set up"; it appears the first time).
-   Your browser opens.
+1. Open the **Claude** app, tap the **Code** tab, then tap **New session**.
+2. Above the text box, tap the chip with the GitHub logo. If GitHub isn't connected yet, it offers to
+   connect it (look for **Connect GitHub**, "Sign in with GitHub" or "Set up"). Your browser opens.
 3. GitHub asks you to sign in if needed. **Use the GitHub account from step 1b.**
    ⚠️ If your phone's browser is already signed in to a *different* GitHub account, Claude will
    attach to that one by mistake. Sign out of the other one first (github.com → profile picture → Sign out).
@@ -84,8 +84,8 @@ This lets Claude see and change your website's files. You'll do it from the Clau
    Claude → **Configure** → change it to **All repositories** → **Save**.)
 6. GitHub may ask for your password again. Enter it.
 7. You're sent back to the Claude app.
-8. ✅ In the **Code** tab you see a box to type in, and a **repository selector** underneath it
-   (it may say "Select repository"). ⚠️ If it still says "Connect GitHub", repeat from step 2.
+8. ✅ On the **New session** screen, a chip with the GitHub logo above the text box shows a
+   repository name, like "my-site · main". ⚠️ If it still offers to connect GitHub, repeat from step 2.
 
 ### Step 3: Make your website's home from the starter
 
@@ -96,7 +96,7 @@ Your site needs its own space on GitHub (a "repository", or repo). We copy a rea
 2. Tap the green **Use this template** button (top right) → **Create a new repository**.
    ⚠️ Can't see it? Open your browser menu and tap **Request desktop site**, then reload.
 3. **Repository name:** type a short name with only lowercase letters, numbers and hyphens, like
-   `my-bakery-site`. This becomes part of your project's name, so choose something you like.
+   `my-bakery-site`. Any name works, and it doesn't have to match your website's address.
    Don't use your username as the name.
 4. Choose **Private** (so only you can see the files; your website is still public).
 5. Tap **Create repository**.
@@ -105,8 +105,8 @@ Your site needs its own space on GitHub (a "repository", or repo). We copy a rea
 
 ### Step 4: Start chatting with Claude about your site
 
-1. Back in the **Claude app** → **Code** tab.
-2. Tap the **repository selector** under the text box and search for your repo name. Tap it.
+1. Back in the **Claude app** → **Code** tab → **New session**.
+2. Tap the **GitHub chip** above the text box and search for your repo name. Tap it.
    ⚠️ Not in the list? Wait a minute, pull down to refresh, or fully close and reopen the app. If
    it's still missing, Claude's GitHub access doesn't include it; redo the "Repository access"
    part of Step 2 and choose **All repositories**.

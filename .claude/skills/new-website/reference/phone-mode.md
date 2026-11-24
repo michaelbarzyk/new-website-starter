@@ -10,7 +10,7 @@ GitHub Actions does every deploy. Claude needs only the public web config.
 The user made their repo from the **`michaelbarzyk/new-website-starter` template** (a generated copy of this skill plus a starter `CLAUDE.md`, built from
 `michaelbarzyk/catch-a-vibecode` with `scripts/build-starter.sh`; never edited by hand) and opened it in the Claude app. This skill is at
 `.claude/skills/new-website/` in that repo (`$SKILL`). Cloud sessions cannot create repos,
-so the (private) repo already exists; project name = repo name. Scaffold into it with
+so the (private) repo already exists, under any name (it need not match the project name). Scaffold into it with
 `--in-place --dir .` (the script skips `.claude/`). Cloud sessions force a working branch name (e.g.
 `claude/...`); that is the environment, not our convention (see SKILL.md for ours).
 

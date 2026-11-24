@@ -3,16 +3,17 @@
 const PROJECT_ID = /^[a-z][a-z0-9-]{4,28}[a-z0-9]$/
 const EMAIL = /^[^\s@'"\\]+@[^\s@'"\\]+\.[^\s@'"\\]+$/
 
-/** Turn a site name into a valid Firebase project id (6-30 chars, lowercase letters/digits/hyphens, starts with a letter). */
+/**
+ * Turn a site name into a valid Firebase project id (6-30 chars, lowercase letters/digits/hyphens, starts with a letter).
+ * Spaces and punctuation are dropped, not turned into hyphens, so "Pied Piper" becomes piedpiper.web.app.
+ */
 export function toProjectId(name) {
   let id = String(name ?? '')
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-  if (!/^[a-z]/.test(id)) id = id === '' ? 'my-site' : `site-${id}`
-  if (id.length < 6) id = `${id}-site`
-  id = id.slice(0, 30).replace(/-+$/g, '')
-  return id
+    .replace(/[^a-z0-9]+/g, '')
+  if (!/^[a-z]/.test(id)) id = id === '' ? 'mysite' : `site${id}`
+  if (id.length < 6) id = `${id}site`
+  return id.slice(0, 30)
 }
 
 export function isValidProjectId(id) {
@@ -63,14 +64,15 @@ export function deriveValues(input) {
     values.iamUrl = `https://console.cloud.google.com/iam-admin/iam?project=${projectId}`
   }
   if (input.ownerEmail && isValidEmail(input.ownerEmail)) values.ownerEmail = normalizeEmail(input.ownerEmail)
+  // The repo can have any name (it need not match the project id), so it is only known when it was given. Never guessed.
   const typedRepo = input.repoName ? String(input.repoName).trim().toLowerCase() : ''
-  const repoName = typedRepo !== '' ? typedRepo : values.projectId ?? ''
-  if (isValidRepoName(repoName)) values.repoName = repoName
+  if (isValidRepoName(typedRepo)) values.repoName = typedRepo
   if (input.githubUser && isValidGithubUser(String(input.githubUser).trim())) values.githubUser = String(input.githubUser).trim()
-  if (values.repoName) {
-    values.secretsUrl = values.githubUser
-      ? `https://github.com/${values.githubUser}/${values.repoName}/settings/secrets/actions/new`
-      : 'https://github.com/settings/repositories'
+  // A link straight to the secret form only when both are known; otherwise the person's repo list.
+  if (values.githubUser && values.repoName) {
+    values.secretsUrl = `https://github.com/${values.githubUser}/${values.repoName}/settings/secrets/actions/new`
+  } else if (values.siteName || values.projectId || values.githubUser || values.repoName) {
+    values.secretsUrl = 'https://github.com/settings/repositories'
   }
   return values
 }
