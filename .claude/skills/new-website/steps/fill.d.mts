@@ -17,3 +17,4 @@ export function deriveValues(input: StepInput): StepValues
 export function fill(text: string, values: StepValues): string
 export function missing(text: string, values: StepValues): string[]
 export function docForm(text: string, catalog: Record<string, { placeholder?: string }>): string
+export function parseFirebaseConfig(text: string): Record<string, unknown>
