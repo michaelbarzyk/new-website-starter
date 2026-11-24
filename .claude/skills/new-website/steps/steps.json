@@ -112,7 +112,7 @@
       "account": "google",
       "why": "Used for Firebase and for signing in.",
       "do": [
-        "Open the Google sign-up page.",
+        "Open the [Google sign-up page](https://accounts.google.com/signup).",
         "Enter your name, a username and a password, then finish verification."
       ],
       "success": "your name or initial in the top corner.",
@@ -165,7 +165,7 @@
       "account": "github",
       "why": "GitHub keeps your site's files and their history.",
       "do": [
-        "Open the GitHub sign-up page.",
+        "Open the [GitHub sign-up page](https://github.com/signup).",
         "Enter your email, a password and a username.",
         "Solve the puzzle and type the code GitHub emails you.",
         "Skip any “personalize” questions."
@@ -273,7 +273,7 @@
       "account": "claude",
       "why": "Claude Code isn't on the free plan.",
       "do": [
-        "Install the Claude app or open claude.ai, and sign up.",
+        "Install the Claude app or open [claude.ai](https://claude.ai), and sign up.",
         "On the free plan? Open your profile and tap **Upgrade**.",
         "Choose **Pro** or higher and add payment details."
       ],
@@ -473,14 +473,6 @@
         "intro": "Your website’s files will live on GitHub. Connecting lets Claude, the AI that builds your site, open those files and change them when you ask. It takes about a minute, and you only do it once.",
         "sections": [
           {
-            "heading": "What you’ll do",
-            "points": [
-              "In the Claude app, open the **Code** tab, tap **New session**, then tap the GitHub chip above the text box to connect.",
-              "Sign in to GitHub and tap **Authorize**.",
-              "Choose **All repositories**, so Claude can see the site’s home you’re about to make."
-            ]
-          },
-          {
             "heading": "You stay in charge",
             "points": [
               "Claude works on a private copy. You check a preview before anything goes live.",
@@ -502,7 +494,7 @@
       "title": "Create your site's repo from the starter",
       "why": "Your site's files live in your own GitHub repo; every change is saved there and can be undone.",
       "do": [
-        "Open the starter template (link below) and tap **Use this template → Create a new repository** (use 'Request desktop site' if you don't see it).",
+        "Open the [starter template](https://github.com/michaelbarzyk/new-website-starter) and tap **Use this template → Create a new repository** (use 'Request desktop site' if you don't see it).",
         "Name it anything you like, for example **my-website** (lowercase letters, digits, hyphens). Choose **Private**. Tap **Create repository**."
       ],
       "success": "You land on your new repo's page, and it lists a `.claude` folder and a `CLAUDE.md`.",
@@ -623,15 +615,17 @@
       "title": "Create the Firebase project",
       "why": "Firebase hosts your site, database and sign-in, free at this size.",
       "do": [
-        "Open the Firebase console and tap **Add project**.",
-        "Name it **{{siteName}}**. Under the name there is an editable **Project ID**: tap the pencil and set it to **{{projectId}}**. It becomes your free address `{{liveUrl}}` and can **never be changed**.",
-        "Turn **Gemini in Firebase OFF** and **Google Analytics OFF**. Accept the terms. If it offers billing or an upgrade, skip it; the free plan is enough."
+        "Open the [Firebase console](https://console.firebase.google.com) (Firebase's control panel) and tap **Add project**.",
+        "Give the project any name you like. Under it, Firebase shows a **Project ID**. If it adds random letters, or says the name is taken, tap the pencil and edit it until you like it.",
+        "The Project ID becomes your free web address, **<project-id>.web.app**, and can **never be changed**. Pick one you'll be happy with.",
+        "Turn **Gemini in Firebase OFF** and **Google Analytics OFF** (optional extras you don't need). Accept the terms. If it offers billing or an upgrade, skip it; the free plan is enough.",
+        "When the project is created, copy its **Project ID** (Project settings shows it) and type it into the box below."
       ],
-      "success": "You see the new project's overview page, and Project settings shows the Project ID {{projectId}}.",
+      "success": "You see the new project's overview page, and Project settings shows your Project ID.",
       "trouble": [
         {
           "symptom": "That Project ID is taken",
-          "fix": "Add a short suffix (like `{{projectId}}-1`) and tell Claude the new id; the address changes with it."
+          "fix": "Firebase tells you straight away and suggests another. Add a short suffix (like `-1`) or try a different name until it accepts one."
         },
         {
           "symptom": "The id has random letters added",
@@ -644,15 +638,22 @@
           "url": "https://console.firebase.google.com"
         }
       ],
-      "copy": [
-        {
-          "label": "Project ID",
-          "value": "{{projectId}}"
-        }
-      ],
       "automation": {
         "level": "google",
         "note": "UNVERIFIED: Firebase management API (projects + addFirebase) with the user's Google token."
+      },
+      "explainer": {
+        "title": "Create your Firebase project",
+        "intro": "Firebase is Google’s free tool that hosts your website, keeps its data and handles sign-in. A project is your site’s home inside Firebase. You create it in Firebase’s own console, so Firebase itself checks that the address you want is free.",
+        "sections": [
+          {
+            "heading": "Why Firebase picks the address",
+            "points": [
+              "Project IDs are first come, first served across all of Firebase, so common names are often taken. Firebase tells you, so you never end up with an address you can’t use."
+            ]
+          }
+        ],
+        "terms": []
       }
     },
     {
@@ -665,8 +666,8 @@
       ],
       "title": "Create the database",
       "do": [
-        "Open the menu **Databases & Storage → Firestore** (older console: Build → Firestore Database) and tap **Create database**.",
-        "Choose **Standard**, location **nam5 (United States)**, and **Production mode**. Tap **Create**."
+        "Open [Firestore]({{firestoreUrl}}) (menu **Databases & Storage → Firestore**; older console: Build → Firestore Database) and tap **Create database**.",
+        "Choose **Standard**, location **nam5 (United States)** (where your data is stored), and **Production mode** (locked until your rules open it). Tap **Create**."
       ],
       "success": "You see an empty Firestore with a **Data** tab.",
       "links": [
@@ -678,6 +679,20 @@
       "automation": {
         "level": "google",
         "note": "UNVERIFIED: Firestore admin API; the API may need enabling first."
+      },
+      "explainer": {
+        "title": "Create your database",
+        "intro": "Firestore is Firebase’s database: where your site keeps its own information, like messages or posts. You create an empty one now, and it starts locked, so nothing can be read or written until your site’s rules say so.",
+        "sections": [
+          {
+            "heading": "Good to know",
+            "points": [
+              "The location can’t be changed later; the United States choice is fine for most sites.",
+              "Production mode is the safe setting: it keeps everything locked until you open it on purpose."
+            ]
+          }
+        ],
+        "terms": []
       }
     },
     {
@@ -689,12 +704,12 @@
         "laptop"
       ],
       "title": "Turn on Google sign-in",
-      "why": "Visitors sign in with Google so you know who sent each message and can reply. Browsing stays public.",
+      "why": "Sign-in is how you, the owner, log in to edit your site, and how visitors can send you messages later. Browsing stays public: nobody has to sign in to look around.",
       "do": [
-        "Open the menu **Security → Authentication** (older console: Build → Authentication) and tap **Get started**.",
+        "Open [Authentication]({{authUrl}}) (menu **Security → Authentication**; older console: Build → Authentication) and tap **Get started**.",
         "Open **Sign-in method**, tap **Google**, and switch **Enable** on.",
-        "For the **public-facing name**, type **{{siteName}}** (any name works; it shows on the Google sign-in popup). For the **support email**, pick your own email. Tap **Save**.",
-        "Leave **Anonymous** OFF."
+        "For the **public-facing name**, type your site's name (it shows on the Google sign-in popup). For the **support email** (the address people can write to about sign-in), pick your own email. Tap **Save**.",
+        "Leave **Anonymous** OFF (it lets people in without any account)."
       ],
       "success": "Google shows as **Enabled** in the Sign-in method list.",
       "links": [
@@ -706,6 +721,21 @@
       "automation": {
         "level": "google",
         "note": "UNVERIFIED and probably the hardest step: enabling Google needs an OAuth client. May stay as guided taps."
+      },
+      "explainer": {
+        "title": "Turn on Google sign-in",
+        "intro": "Sign-in is how you, the owner, log in to edit your site. Visitors can look around without signing in. If you later add things that need to know who someone is, like sending you a message, they can sign in with their Google account too. Firebase handles the passwords, so you never touch them.",
+        "sections": [
+          {
+            "heading": "Good to know",
+            "points": [
+              "Your site stays public: nobody has to sign in just to browse it.",
+              "The public-facing name shows on the Google sign-in popup, so type your site’s name.",
+              "Leave **Anonymous** off. It lets people in without any account, and you want to know who signed in."
+            ]
+          }
+        ],
+        "terms": []
       }
     },
     {
@@ -720,14 +750,29 @@
       "why": "These six values are your site's address-book entry for Firebase.",
       "do": [
         "On **Project overview**, tap **Add app** (under the project name) and choose the web icon `</>`.",
-        "Nickname: **{{siteName}}**. Leave **Firebase Hosting unchecked**. Tap **Register app**.",
-        "It asks **npm or script tag**: choose **npm**. Ignore the install commands.",
-        "Copy the six values from `firebaseConfig` (apiKey, authDomain, projectId, storageBucket, messagingSenderId, appId) and paste them into Claude. They are public by design, so this is safe to share."
+        "Nickname: your site's name. Leave **Firebase Hosting unchecked**. Tap **Register app**.",
+        "It asks **npm or script tag**: choose **npm** (a way of adding ready-made code to a site; Claude uses it later, so ignore the install commands).",
+        "Copy the whole **firebaseConfig** block (the code with apiKey, authDomain, projectId and the rest) and paste it into the box below. These settings are public by design, so this is safe to share."
       ],
-      "success": "You've sent all six values to Claude.",
+      "success": "The box below says all six settings were found.",
       "automation": {
         "level": "google",
         "note": "UNVERIFIED: webApps.create and webApps.getConfig in the Firebase management API."
+      },
+      "explainer": {
+        "title": "Connect your site to Firebase",
+        "intro": "A web app is the entry inside your project that stands for your website. Registering one gives you six settings, your site’s address-book entry for Firebase. They’re public by design, so it’s safe to paste them here.",
+        "sections": [
+          {
+            "heading": "Why we ask for these",
+            "points": [
+              "Your site needs these six settings to find your Firebase project, like an address on an envelope.",
+              "Firebase makes up three of them (a code for your site, a number and an ID), so we can’t guess them: you copy them from Firebase.",
+              "They’re public by design. What protects your site is your database rules and sign-in, not these."
+            ]
+          }
+        ],
+        "terms": []
       }
     },
     {
@@ -741,8 +786,8 @@
       "title": "Make the deploy key (the only sensitive step)",
       "why": "This key lets GitHub publish your site and rules for you.",
       "do": [
-        "Open **Project settings** (gear) → **Service accounts** and tap **Generate new private key**, then **Generate key**. A `.json` file downloads to your phone.",
-        "Ignore the 'Admin SDK configuration snippet' above the button; it's only example code.",
+        "Open [Service accounts]({{serviceAccountsUrl}}) (**Project settings** → **Service accounts**: a robot login for your project) and tap **Generate new private key**, then **Generate key**. A `.json` file (a plain text file) downloads to your phone.",
+        "Ignore the 'Admin SDK configuration snippet' above the button; it's example code for programmers.",
         "Copy ALL the text in the file: open your browser's downloads list and tap the file, or use the Files app (iPhone: preview it, or Share → Save to Notes, then copy).",
         "**Never paste this key into the Claude chat or any website.** It goes only into a GitHub secret in the next steps."
       ],
@@ -762,6 +807,20 @@
       "automation": {
         "level": "google",
         "note": "UNVERIFIED: IAM service-account keys API, straight to a GitHub secret. Organisations may block key creation; Workload Identity Federation avoids keys."
+      },
+      "explainer": {
+        "title": "Make the deploy key",
+        "intro": "The deploy key is a private file that lets GitHub publish your site to Firebase for you. It’s the one sensitive thing in this whole guide: keep it out of chats and websites. It only ever goes into a GitHub secret.",
+        "sections": [
+          {
+            "heading": "Why be careful",
+            "points": [
+              "Anyone with this key could change your Firebase project, so treat it like a password.",
+              "You’ll delete the downloaded file once it’s saved."
+            ]
+          }
+        ],
+        "terms": []
       }
     },
     {
@@ -775,8 +834,8 @@
       "title": "Give the key two permissions",
       "why": "The key starts with few permissions. These two let it check that the database is on and publish your rules.",
       "do": [
-        "Open the Google Cloud IAM page (link below) and sign in with the same Google account. Accept any welcome screen.",
-        "Tap the pencil on the row **firebase-adminsdk-…**, then **Add another role** and add **Service Usage Consumer**.",
+        "Open the [Google Cloud IAM page]({{iamUrl}}) (where permissions are set) and sign in with the same Google account. Accept any welcome screen.",
+        "Tap the pencil on the row **firebase-adminsdk-…**, then **Add another role** (a role is a set of permissions) and add **Service Usage Consumer**.",
         "Tap **Add another role** again and add **Firebase Rules Admin** (type `rules` in the role box; if it's missing, **Firebase Admin** also works but is broader). Tap **Save**.",
         "Keep its existing roles. Leave the **Owner (Legacy)** row (that's you) alone. Don't add any Cloud Datastore roles.",
         "Wait 1 to 2 minutes: Google applies these slowly."
@@ -805,6 +864,20 @@
       "automation": {
         "level": "google",
         "note": "UNVERIFIED: Resource Manager setIamPolicy."
+      },
+      "explainer": {
+        "title": "Give the key two permissions",
+        "intro": "A new deploy key can do very little. Two permissions let it check that your database is on and publish your site’s rules. You add them on Google Cloud, the platform Firebase runs on.",
+        "sections": [
+          {
+            "heading": "Good to know",
+            "points": [
+              "A role is a named set of permissions. You’re giving the key two of them.",
+              "Google applies a new role slowly, so a wait of a minute or two is normal."
+            ]
+          }
+        ],
+        "terms": []
       }
     },
     {
@@ -818,7 +891,7 @@
       "title": "Save the key as a GitHub secret",
       "why": "Only GitHub's CI can use the secret; it's hidden once saved.",
       "do": [
-        "Open your repo on github.com (use 'Desktop site' if the phone view hides Settings) → **Settings → Secrets and variables → Actions → New repository secret**.",
+        "Open the [new secret page]({{secretsUrl}}). If it shows a list, pick your site's repo, then **Settings → Secrets and variables → Actions → New repository secret** (tap 'Desktop site' if the phone view hides Settings).",
         "Name: exactly **{{secretName}}**. Value: paste the whole key text. Tap **Add secret**.",
         "Delete the downloaded file from your phone."
       ],
@@ -844,6 +917,20 @@
       "automation": {
         "level": "github",
         "note": "Can be done by the site: encrypt client-side and PUT the secret with the user's GitHub token."
+      },
+      "explainer": {
+        "title": "Save the key as a GitHub secret",
+        "intro": "A GitHub secret is a private value stored in your repo’s settings. GitHub’s automatic jobs can use it to publish your site, but nobody can read it back. This is where the deploy key finally goes.",
+        "sections": [
+          {
+            "heading": "Good to know",
+            "points": [
+              "Once saved, a secret is hidden: you can replace it, but nobody can read it back.",
+              "The exact name matters: your site’s publishing job looks for it by name."
+            ]
+          }
+        ],
+        "terms": []
       }
     },
     {
@@ -912,7 +999,7 @@
       ],
       "title": "Sign in and become admin",
       "do": [
-        "Open **{{liveUrl}}** and tap **Sign in** with **{{ownerEmail}}**.",
+        "Open [{{liveUrl}}]({{liveUrl}}) and tap **Sign in** with **{{ownerEmail}}**.",
         "The **Admin** link and edit buttons appear. Nothing to set up: your email is on the site's owner list, so your first sign-in makes you admin."
       ],
       "success": "You see the Admin link while signed in.",

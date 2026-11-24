@@ -137,29 +137,30 @@ Do them in this order. Claude builds your first draft while you work, so you won
 **1. Create the Firebase project**
 *Firebase hosts your site, database and sign-in, free at this size.*
 
-- Open the Firebase console and tap **Add project**.
-- Name it **<site name>**. Under the name there is an editable **Project ID**: tap the pencil and set it to **<project-id>**. It becomes your free address `https://<project-id>.web.app` and can **never be changed**.
-- Turn **Gemini in Firebase OFF** and **Google Analytics OFF**. Accept the terms. If it offers billing or an upgrade, skip it; the free plan is enough.
+- Open the [Firebase console](https://console.firebase.google.com) (Firebase's control panel) and tap **Add project**.
+- Give the project any name you like. Under it, Firebase shows a **Project ID**. If it adds random letters, or says the name is taken, tap the pencil and edit it until you like it.
+- The Project ID becomes your free web address, **<project-id>.web.app**, and can **never be changed**. Pick one you'll be happy with.
+- Turn **Gemini in Firebase OFF** and **Google Analytics OFF** (optional extras you don't need). Accept the terms. If it offers billing or an upgrade, skip it; the free plan is enough.
+- When the project is created, copy its **Project ID** (Project settings shows it) and type it into the box below.
 - Link: [Firebase console](https://console.firebase.google.com)
-- Value: Project ID = `<project-id>`
-- ✅ Worked when: You see the new project's overview page, and Project settings shows the Project ID <project-id>.
-- ⚠️ That Project ID is taken → Add a short suffix (like `<project-id>-1`) and tell Claude the new id; the address changes with it.
+- ✅ Worked when: You see the new project's overview page, and Project settings shows your Project ID.
+- ⚠️ That Project ID is taken → Firebase tells you straight away and suggests another. Add a short suffix (like `-1`) or try a different name until it accepts one.
 - ⚠️ The id has random letters added → Tap the pencil and edit it before you tap Create; it can't be changed later.
 
 **2. Create the database**
 
-- Open the menu **Databases & Storage → Firestore** (older console: Build → Firestore Database) and tap **Create database**.
-- Choose **Standard**, location **nam5 (United States)**, and **Production mode**. Tap **Create**.
+- Open [Firestore](https://console.firebase.google.com/project/<project-id>/firestore) (menu **Databases & Storage → Firestore**; older console: Build → Firestore Database) and tap **Create database**.
+- Choose **Standard**, location **nam5 (United States)** (where your data is stored), and **Production mode** (locked until your rules open it). Tap **Create**.
 - Link: [Firestore page](https://console.firebase.google.com/project/<project-id>/firestore)
 - ✅ Worked when: You see an empty Firestore with a **Data** tab.
 
 **3. Turn on Google sign-in**
-*Visitors sign in with Google so you know who sent each message and can reply. Browsing stays public.*
+*Sign-in is how you, the owner, log in to edit your site, and how visitors can send you messages later. Browsing stays public: nobody has to sign in to look around.*
 
-- Open the menu **Security → Authentication** (older console: Build → Authentication) and tap **Get started**.
+- Open [Authentication](https://console.firebase.google.com/project/<project-id>/authentication/providers) (menu **Security → Authentication**; older console: Build → Authentication) and tap **Get started**.
 - Open **Sign-in method**, tap **Google**, and switch **Enable** on.
-- For the **public-facing name**, type **<site name>** (any name works; it shows on the Google sign-in popup). For the **support email**, pick your own email. Tap **Save**.
-- Leave **Anonymous** OFF.
+- For the **public-facing name**, type your site's name (it shows on the Google sign-in popup). For the **support email** (the address people can write to about sign-in), pick your own email. Tap **Save**.
+- Leave **Anonymous** OFF (it lets people in without any account).
 - Link: [Authentication page](https://console.firebase.google.com/project/<project-id>/authentication/providers)
 - ✅ Worked when: Google shows as **Enabled** in the Sign-in method list.
 
@@ -167,16 +168,16 @@ Do them in this order. Claude builds your first draft while you work, so you won
 *These six values are your site's address-book entry for Firebase.*
 
 - On **Project overview**, tap **Add app** (under the project name) and choose the web icon `</>`.
-- Nickname: **<site name>**. Leave **Firebase Hosting unchecked**. Tap **Register app**.
-- It asks **npm or script tag**: choose **npm**. Ignore the install commands.
-- Copy the six values from `firebaseConfig` (apiKey, authDomain, projectId, storageBucket, messagingSenderId, appId) and paste them into Claude. They are public by design, so this is safe to share.
-- ✅ Worked when: You've sent all six values to Claude.
+- Nickname: your site's name. Leave **Firebase Hosting unchecked**. Tap **Register app**.
+- It asks **npm or script tag**: choose **npm** (a way of adding ready-made code to a site; Claude uses it later, so ignore the install commands).
+- Copy the whole **firebaseConfig** block (the code with apiKey, authDomain, projectId and the rest) and paste it into the box below. These settings are public by design, so this is safe to share.
+- ✅ Worked when: The box below says all six settings were found.
 
 **5. Make the deploy key (the only sensitive step)**
 *This key lets GitHub publish your site and rules for you.*
 
-- Open **Project settings** (gear) → **Service accounts** and tap **Generate new private key**, then **Generate key**. A `.json` file downloads to your phone.
-- Ignore the 'Admin SDK configuration snippet' above the button; it's only example code.
+- Open [Service accounts](https://console.firebase.google.com/project/<project-id>/settings/serviceaccounts/adminsdk) (**Project settings** → **Service accounts**: a robot login for your project) and tap **Generate new private key**, then **Generate key**. A `.json` file (a plain text file) downloads to your phone.
+- Ignore the 'Admin SDK configuration snippet' above the button; it's example code for programmers.
 - Copy ALL the text in the file: open your browser's downloads list and tap the file, or use the Files app (iPhone: preview it, or Share → Save to Notes, then copy).
 - **Never paste this key into the Claude chat or any website.** It goes only into a GitHub secret in the next steps.
 - Link: [Service accounts page](https://console.firebase.google.com/project/<project-id>/settings/serviceaccounts/adminsdk)
@@ -186,8 +187,8 @@ Do them in this order. Claude builds your first draft while you work, so you won
 **6. Give the key two permissions**
 *The key starts with few permissions. These two let it check that the database is on and publish your rules.*
 
-- Open the Google Cloud IAM page (link below) and sign in with the same Google account. Accept any welcome screen.
-- Tap the pencil on the row **firebase-adminsdk-…**, then **Add another role** and add **Service Usage Consumer**.
+- Open the [Google Cloud IAM page](https://console.cloud.google.com/iam-admin/iam?project=<project-id>) (where permissions are set) and sign in with the same Google account. Accept any welcome screen.
+- Tap the pencil on the row **firebase-adminsdk-…**, then **Add another role** (a role is a set of permissions) and add **Service Usage Consumer**.
 - Tap **Add another role** again and add **Firebase Rules Admin** (type `rules` in the role box; if it's missing, **Firebase Admin** also works but is broader). Tap **Save**.
 - Keep its existing roles. Leave the **Owner (Legacy)** row (that's you) alone. Don't add any Cloud Datastore roles.
 - Wait 1 to 2 minutes: Google applies these slowly.
@@ -200,7 +201,7 @@ Do them in this order. Claude builds your first draft while you work, so you won
 **7. Save the key as a GitHub secret**
 *Only GitHub's CI can use the secret; it's hidden once saved.*
 
-- Open your repo on github.com (use 'Desktop site' if the phone view hides Settings) → **Settings → Secrets and variables → Actions → New repository secret**.
+- Open the [new secret page](https://github.com/<github-username>/<repo-name>/settings/secrets/actions/new). If it shows a list, pick your site's repo, then **Settings → Secrets and variables → Actions → New repository secret** (tap 'Desktop site' if the phone view hides Settings).
 - Name: exactly **<SECRET_NAME>**. Value: paste the whole key text. Tap **Add secret**.
 - Delete the downloaded file from your phone.
 - Link: [New secret page](https://github.com/<github-username>/<repo-name>/settings/secrets/actions/new)

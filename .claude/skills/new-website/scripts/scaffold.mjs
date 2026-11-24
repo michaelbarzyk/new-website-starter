@@ -14,36 +14,15 @@
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, extname, join, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
-import { isValidEmail, isValidProjectId, isValidRepoName, normalizeEmail } from '../steps/fill.mjs'
+import { isValidEmail, isValidProjectId, isValidRepoName, normalizeEmail, parseFirebaseConfig } from '../steps/fill.mjs'
+
+// Lives in steps/fill.mjs (which the website also uses, and which has no Node-only imports); re-exported here for the scripts and tests.
+export { parseFirebaseConfig }
 
 const REQUIRED_ARGS = ['dir', 'name', 'title', 'project-id', 'site-id', 'secret', 'config']
 const CONFIG_KEYS = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId']
 const FLAGS = new Set(['--phone', '--in-place'])
 const SECRET_NAME = /^[A-Z][A-Z0-9_]*$/
-
-/**
- * Reads the Firebase web config from JSON, or from the JavaScript object the Firebase console shows
- * (bare keys, single quotes, trailing commas, a `const firebaseConfig =` prefix). Never evaluates code.
- * Throws if it can't be read as an object.
- */
-export function parseFirebaseConfig(text) {
-  const raw = String(text).trim()
-  try {
-    return JSON.parse(raw)
-  } catch {
-    // fall through to the JavaScript form
-  }
-  const start = raw.indexOf('{')
-  const end = raw.lastIndexOf('}')
-  if (start === -1 || end <= start) throw new Error('no { ... } object found in the config file')
-  const body = raw
-    .slice(start, end + 1)
-    .replace(/^\s*\/\/.*$/gm, '')
-    .replace(/([{,]\s*)([A-Za-z_][A-Za-z0-9_]*)\s*:/g, '$1"$2":')
-    .replace(/'([^'\\]*)'/g, '"$1"')
-    .replace(/,(\s*[}\]])/g, '$1')
-  return JSON.parse(body)
-}
 
 /** Everything that is wrong with the inputs, as plain sentences. An empty list means safe to go ahead. */
 export function findProblems({ args, config, configError, destExists, destEmpty, inPlace }) {
