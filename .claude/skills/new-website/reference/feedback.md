@@ -9,8 +9,8 @@ back-and-forth steps; most were order-of-operations and missing-detail problems,
 
 ### Fixed in the refactor
 - **Order of operations.** We scaffolded with placeholder Firebase settings, then swapped in real ones and renamed ids. Now: one
-  Firebase console pass first (project → database → sign-in → web app → key → IAM → secret), scaffold with the REAL config right after
-  step 4, and build the first draft while the user does the rest. (SKILL.md flow; phone-mode.md)
+  Firebase console pass first (project → web app → database → sign-in → key and GitHub secret → IAM), scaffold with the REAL config right after
+  step 2, and build the first draft while the user does the rest. (SKILL.md flow; phone-mode.md)
 - **Web address.** The project id became the live URL (`vibesew-test00.web.app`) because the id was never edited in the create wizard.
   Now: edit the id under the name before Create; explainer #2b; discovery Round 3b. (Open: automate "add another Hosting site".)
 - **Create-project wizard questions** (Gemini, Analytics, billing) answered up front.

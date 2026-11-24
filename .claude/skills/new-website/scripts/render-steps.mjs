@@ -6,22 +6,32 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { docForm } from '../steps/fill.mjs'
+import { layoutStep } from '../steps/layout.mjs'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const data = JSON.parse(readFileSync(join(root, 'steps/steps.json'), 'utf8'))
 
 /** Markdown for the steps of one phase, numbered from 1. */
 export function renderPhase(phase, data) {
-  const f = (t) => docForm(t, data.values)
+  // A [[button]] looks like a button on the site; in the docs it is just marked as code.
+  const f = (t) => docForm(t, data.values).replace(/\[\[([^\]]+)\]\]/g, '`$1`')
+  const link = (l) => `- Link: [${f(l.label)}](${f(l.url)})`
+  const copy = (c) => `- Value: ${f(c.label)} = \`${f(c.value)}\``
   const steps = data.steps.filter((s) => s.phase === phase)
   const out = []
   steps.forEach((s, i) => {
     out.push(`**${i + 1}. ${f(s.title)}**`)
     if (s.why) out.push(`*${f(s.why)}*`)
     out.push('')
-    for (const line of s.do) out.push(`- ${f(line)}`)
-    for (const l of s.links ?? []) out.push(`- Link: [${f(l.label)}](${f(l.url)})`)
-    for (const c of s.copy ?? []) out.push(`- Value: ${f(c.label)} = \`${f(c.value)}\``)
+    const { items, tail } = layoutStep(s)
+    for (const item of items) {
+      out.push(`- ${f(item.text)}`)
+      for (const note of item.notes) out.push(`  - ${f(note)}`)
+      for (const l of item.links) out.push(`  ${link(l)}`)
+      for (const c of item.copies) out.push(`  ${copy(c)}`)
+    }
+    for (const l of tail.links) out.push(link(l))
+    for (const c of tail.copies) out.push(copy(c))
     if (s.success) out.push(`- ✅ Worked when: ${f(s.success)}`)
     for (const t of s.trouble ?? []) out.push(`- ⚠️ ${f(t.symptom)} → ${f(t.fix)}`)
     out.push('')
