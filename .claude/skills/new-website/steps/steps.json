@@ -3,13 +3,13 @@
   "values": {
     "siteName": {
       "label": "Site name",
-      "example": "Vibesew",
+      "example": "Pied Piper",
       "placeholder": "<site name>",
       "hint": "What visitors see. Any name works."
     },
     "projectId": {
       "label": "Web address / Firebase project id",
-      "example": "vibesew",
+      "example": "piedpiper",
       "placeholder": "<project-id>",
       "hint": "Becomes <id>.web.app and can NEVER be changed. 6-30 lowercase letters, digits or hyphens, starting with a letter."
     },
@@ -21,7 +21,7 @@
     },
     "repoName": {
       "label": "Name for your new GitHub repo",
-      "example": "vibesew",
+      "example": "piedpiper",
       "placeholder": "<repo-name>",
       "hint": "Lowercase letters, digits and hyphens. Defaults to the project id."
     },
@@ -440,14 +440,14 @@
       "title": "Connect Claude to GitHub",
       "why": "This lets Claude see and change your website's files.",
       "do": [
-        "Open the Claude app and tap the **Code** tab.",
-        "Tap **Connect GitHub**. Your browser opens.",
+        "Open the Claude app, tap the **Code** tab, then tap **New session**.",
+        "Above the text box, tap the chip with the GitHub logo. If GitHub isn’t connected yet, it offers to connect it (look for **Connect GitHub**). Your browser opens.",
         "Sign in to GitHub with the account you will use for everything. If your browser is already signed in to a different GitHub account, sign it out first.",
         "On the 'Authorize Claude' screen, tap **Authorize**.",
         "On the install screen, under **Repository access** choose **All repositories**, then tap **Install**. (Choosing only some repositories is the most common cause of 'repository not found' later.)",
         "Enter your GitHub password if it asks, and you are sent back to the Claude app."
       ],
-      "success": "In the Code tab you see a text box with a repository selector under it.",
+      "success": "On the New session screen, a chip with the GitHub logo shows a repository name, like “my-site · main”, above the text box.",
       "trouble": [
         {
           "symptom": "It still says Connect GitHub",
@@ -467,6 +467,28 @@
       "automation": {
         "level": "manual",
         "note": ""
+      },
+      "explainer": {
+        "title": "Connect Claude to GitHub",
+        "intro": "Your website’s files will live on GitHub. Connecting lets Claude, the AI that builds your site, open those files and change them when you ask. It takes about a minute, and you only do it once.",
+        "sections": [
+          {
+            "heading": "What you’ll do",
+            "points": [
+              "In the Claude app, open the **Code** tab, tap **New session**, then tap the GitHub chip above the text box to connect.",
+              "Sign in to GitHub and tap **Authorize**.",
+              "Choose **All repositories**, so Claude can see the site’s home you’re about to make."
+            ]
+          },
+          {
+            "heading": "You stay in charge",
+            "points": [
+              "Claude works on a private copy. You check a preview before anything goes live.",
+              "You can disconnect Claude at any time in your GitHub settings."
+            ]
+          }
+        ],
+        "terms": []
       }
     },
     {
@@ -481,15 +503,9 @@
       "why": "Your site's files live in your own GitHub repo; every change is saved there and can be undone.",
       "do": [
         "Open the starter template (link below) and tap **Use this template → Create a new repository** (use 'Request desktop site' if you don't see it).",
-        "Name it **{{repoName}}** (lowercase letters, digits, hyphens). Choose **Private**. Tap **Create repository**."
+        "Name it anything you like, for example **my-website** (lowercase letters, digits, hyphens). Choose **Private**. Tap **Create repository**."
       ],
       "success": "You land on your new repo's page, and it lists a `.claude` folder and a `CLAUDE.md`.",
-      "copy": [
-        {
-          "label": "Repo name",
-          "value": "{{repoName}}"
-        }
-      ],
       "automation": {
         "level": "github",
         "note": "Can be done by the site with GitHub's 'generate from template' API and the user's GitHub token."
@@ -505,7 +521,27 @@
           "label": "Open the starter template",
           "url": "https://github.com/michaelbarzyk/new-website-starter"
         }
-      ]
+      ],
+      "explainer": {
+        "title": "Create your site’s repo",
+        "intro": "A repo (short for repository) is your website’s folder on GitHub. It remembers every change, so you can always go back to an earlier version. You’ll make yours from a ready-made starter, so it already has what Claude needs.",
+        "sections": [
+          {
+            "heading": "Why a starter?",
+            "points": [
+              "It comes with instructions for Claude, so Claude builds your site the way this guide expects.",
+              "It’s a copy: changing yours never touches the original."
+            ]
+          },
+          {
+            "heading": "Why private?",
+            "points": [
+              "Only you, and people you invite, can see your repo’s files. Your finished website can still be public."
+            ]
+          }
+        ],
+        "terms": []
+      }
     },
     {
       "id": "save-brief",
@@ -518,7 +554,7 @@
       "title": "Save your site brief in the repo",
       "why": "Claude reads this file so it already knows your answers and doesn't ask them again.",
       "do": [
-        "Open your new repo **{{repoName}}** on github.com and tap **Add file → Create new file**.",
+        "Open your new repo on github.com and tap **Add file → Create new file**.",
         "In the file name box type `.claude/site-brief.json` (typing the slash makes the folder).",
         "Paste your site brief (use the copy button below), then tap **Commit changes**."
       ],
@@ -550,8 +586,8 @@
       ],
       "title": "Open your repo in Claude",
       "do": [
-        "In the Claude app, open the **Code** tab.",
-        "Tap the repository selector under the text box and choose **{{repoName}}**. If it's missing, wait a minute and refresh, or reconnect GitHub and choose **All repositories**.",
+        "In the Claude app, open the **Code** tab and tap **New session**.",
+        "Above the text box, tap the GitHub chip (it shows a repository name and branch) and choose your new repo. If it's missing, wait a minute and refresh, or reconnect GitHub and choose **All repositories**.",
         "Send the message below. The first start can take a minute or two."
       ],
       "success": "Claude confirms your answers in one message instead of asking everything again.",
@@ -820,7 +856,7 @@
       ],
       "title": "Claude builds your first draft",
       "do": [
-        "Claude scaffolds your site into **{{repoName}}** with your real Firebase settings and owner email **{{ownerEmail}}**, then runs the format, lint, test and build checks. All must pass before moving on.",
+        "Claude scaffolds your site into your repo with your real Firebase settings and owner email **{{ownerEmail}}**, then runs the format, lint, test and build checks. All must pass before moving on.",
         "Claude opens a pull request into `main` for this first release (later changes go through `dev`). GitHub checks it and posts a private **preview link**."
       ],
       "success": "Claude shows you the preview link. Open it on your phone.",
