@@ -98,3 +98,38 @@ export function missing(text, values) {
 export function docForm(text, catalog) {
   return String(text).replace(PLACEHOLDER, (whole, key) => catalog[key]?.placeholder ?? whole)
 }
+
+/**
+ * Reads the Firebase web config from JSON, or from the JavaScript object the Firebase console shows
+ * (bare keys, single quotes, trailing commas, a `const firebaseConfig =` prefix). Never evaluates code.
+ * Throws if it can't be read as an object.
+ */
+export function parseFirebaseConfig(text) {
+  const raw = String(text).trim()
+  try {
+    return asObject(JSON.parse(raw))
+  } catch (error) {
+    if (error instanceof NotAnObject) throw error
+    // fall through to the JavaScript form
+  }
+  const start = raw.indexOf('{')
+  const end = raw.lastIndexOf('}')
+  if (start === -1 || end <= start) throw new Error('no { ... } object found in the config file')
+  const body = raw
+    .slice(start, end + 1)
+    .replace(/^\s*\/\/.*$/gm, '')
+    .replace(/([{,]\s*)([A-Za-z_][A-Za-z0-9_]*)\s*:/g, '$1"$2":')
+    .replace(/'([^'\\]*)'/g, '"$1"')
+    .replace(/,(\s*[}\]])/g, '$1')
+  return asObject(JSON.parse(body))
+}
+
+class NotAnObject extends Error {}
+
+/** Valid JSON such as null, 5 or a list is not a config: only an object is. */
+function asObject(value) {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    throw new NotAnObject('the config is not an object')
+  }
+  return value
+}
